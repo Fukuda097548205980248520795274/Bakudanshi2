@@ -661,7 +661,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					BombMove(bomb, bullet , particle);
 
 					// 弾を動かす
-					BulletMove(bullet);
+					BulletMove(bullet , particle);
 
 					// 敵を動かす
 					EnemyMove(enemy, &player , particle);
