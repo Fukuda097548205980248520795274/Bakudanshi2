@@ -68,6 +68,9 @@
     <ClCompile Include="Particle.cpp">
       <Filter>KamataEngine</Filter>
     </ClCompile>
+    <ClCompile Include="FullScreen.cpp">
+      <Filter>KamataEngine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\KamataEngine\DirectXGame\audio\Audio.h">
@@ -154,5 +157,6 @@
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="shake.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="FullScreen.h" />
   </ItemGroup>
 </Project>

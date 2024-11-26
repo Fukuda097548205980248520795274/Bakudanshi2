@@ -13,6 +13,7 @@
 #include "Boss.h"
 #include "shake.h"
 #include "Particle.h"
+#include "FullScreen.h"
 
 const char kWindowTitle[] = "1228_爆男子";
 
@@ -52,6 +53,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Enemy enemy[kEnemyNum];
 	Boss boss;
 	BackGround backGround;
+	SH sH;
 
 	/*   プレイヤー   */
 
@@ -342,6 +344,58 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 敵（空中）
 	int ghCharEnemyFlying = Novice::LoadTexture("./Resources/images/char/enemy_flying.png");
 
+	/*   効果音   */
+
+	// 歩く
+	sH.playerWalk = Novice::LoadAudio("./Resources/Sounds/playerWalk.mp3");
+
+	// ダメージ
+	sH.playerDamage = Novice::LoadAudio("./Resources/Sounds/playerDamage.mp3");
+	sH.pHPlayerDamage = -1;
+
+	// ジャンプ
+	sH.jump = Novice::LoadAudio("./Resources/Sounds/jump.mp3");
+
+	// プレイヤーの着地
+	sH.land = Novice::LoadAudio("./Resources/Sounds/land.mp3");
+
+	// 爆弾の導火線
+	sH.bomCount = Novice::LoadAudio("./Resources/Sounds/bomCount.mp3");
+	sH.pHBomCount = -1;
+
+	// 爆弾の爆発
+	sH.explosive = Novice::LoadAudio("./Resources/Sounds/bom.mp3");
+
+	// ボスの突進
+	sH.bossDash = Novice::LoadAudio("./Resources/Sounds/bossDash.mp3");
+	sH.pHBossDash = -1;
+
+	// 壁にぶつかる
+	sH.hitWall = Novice::LoadAudio("./Resources/Sounds/hitWall.mp3");
+	sH.pHHitWall = -1;
+
+	// 飛び上がる
+	sH.fly = Novice::LoadAudio("./Resources/Sounds/bossFly.mp3");
+
+	// 天井に当たる
+	sH.hitSelling = Novice::LoadAudio("./Resources/Sounds/hitCelling.mp3");
+
+	// 振動
+	sH.earthqueke = Novice::LoadAudio("./Resources/Sounds/earthqueke.mp3");
+	sH.pHEarthqueke = -1;
+
+	// 地面を叩きつける
+	sH.groundSlum = Novice::LoadAudio("./Resources/Sounds/groundslum.mp3");
+
+	// ジャンプ
+	sH.bossJump = Novice::LoadAudio("./Resources/Sounds/bossJump.mp3");
+
+	// 雑魚敵召喚
+	sH.enemyStart = Novice::LoadAudio("./Resources/Sounds/enemyStart.mp3");
+	sH.flyingEnemyStart = Novice::LoadAudio("./Resources/Sounds/flyingEnemyStart.mp3");
+
+	// フルスクリーンにする
+	SetFullScreen(GetActiveWindow());
 
 	// ウィンドウの×ボタンが押されるまでループ
 	while (Novice::ProcessMessage() == 0) {
@@ -652,13 +706,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (hitStop.isStop == false)
 				{
 					// プレイヤーを操作する
-					PlayerMove(&player, keys, preKeys, &leftStick);
+					PlayerMove(&player, keys, preKeys, &leftStick, &sH);
 
 					// プレイヤーが爆弾を使う
-					PlayerBombUse(&player, bomb, bullet, keys, preKeys);
+					PlayerBombUse(&player, bomb, bullet, keys, preKeys, &sH);
 
 					// 爆弾を動かす
-					BombMove(bomb, bullet , particle);
+					BombMove(bomb, bullet , particle, &sH);
 
 					// 弾を動かす
 					BulletMove(bullet);
@@ -667,7 +721,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					EnemyMove(enemy, &player , particle);
 
 					// ボスを動かす
-					BossMove(&boss, &player, bullet, enemy, particle, &backGround);
+					BossMove(&boss, &player, bullet, enemy, particle, &backGround, &sH);
 
 					// パーティクルを動かす
 					PartivleMove(particle);
@@ -852,6 +906,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							}
 						}
 					}
+				}
+			}
+
+			if (player.damage.isDamage) {
+				if (!Novice::IsPlayingAudio(sH.pHPlayerDamage) || sH.pHPlayerDamage == -1) {
+					sH.pHPlayerDamage = Novice::PlayAudio(sH.playerDamage, 0, 0.6f);
 				}
 			}
 
