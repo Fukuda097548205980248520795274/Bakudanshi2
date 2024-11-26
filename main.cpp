@@ -12,6 +12,7 @@
 #include "Enemy.h"
 #include "Boss.h"
 #include "shake.h"
+#include "Particle.h"
 
 const char kWindowTitle[] = "1228_爆男子";
 
@@ -265,6 +266,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 放出する開始時間
 		particle[i].emitStartTimer = 0;
 
+		// 種類
+		particle[i].type = -1;
+
 		// 図形
 		particle[i].shape.scale = { 0.0f , 0.0f };
 		particle[i].shape.theta = 0.0f;
@@ -273,6 +277,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 位置
 		particle[i].pos.world = VertexAffineMatrix(particle[i].shape);
 		particle[i].pos.screen = CoordinateTransformation(particle[i].pos.world);
+
+		// ベクトル
+		particle[i].vec = { 0.0f , 0.0f };
 
 		// 移動速度
 		particle[i].vel = { 0.0f , 0.0f };
@@ -651,16 +658,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					PlayerBombUse(&player, bomb, bullet, keys, preKeys);
 
 					// 爆弾を動かす
-					BombMove(bomb, bullet);
+					BombMove(bomb, bullet , particle);
 
 					// 弾を動かす
 					BulletMove(bullet);
 
 					// 敵を動かす
-					EnemyMove(enemy, &player);
+					EnemyMove(enemy, &player , particle);
 
 					// ボスを動かす
-					BossMove(&boss, &player, bullet, enemy, &backGround);
+					BossMove(&boss, &player, bullet, enemy, particle, &backGround);
+
+					// パーティクルを動かす
+					PartivleMove(particle);
 
 					// シェイク
 					ShakeBG(&backGround);
@@ -883,6 +893,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ボス
 			boss.pos.screen = CoordinateTransformation(boss.pos.world);
 
+			// パーティクル
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				particle[i].pos.screen = CoordinateTransformation(particle[i].pos.world);
+			}
+
 			///* ゲームオーバー、クリア判定 */
 			//if (player.damage.hp <= 0) {
 			//    gameState = GAME_OVER;
@@ -894,6 +910,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// ここにゲーム中の描画処理を配置7
 
 			Novice::DrawSprite(-100 + backGround.rand.x, -100 + backGround.rand.y, ghBgStage, 1, 1, 0.0f, 0xFFFFFFFF);
+
+			// 放出された（放出フラグがtrueである）パーティクル
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				if (particle[i].isEmission)
+				{
+					Novice::DrawQuad
+					(
+						static_cast<int>(particle[i].pos.screen.leftTop.x) , static_cast<int>(particle[i].pos.screen.leftTop.y) ,
+						static_cast<int>(particle[i].pos.screen.rightTop.x), static_cast<int>(particle[i].pos.screen.rightTop.y),
+						static_cast<int>(particle[i].pos.screen.leftBottom.x), static_cast<int>(particle[i].pos.screen.leftBottom.y),
+						static_cast<int>(particle[i].pos.screen.rightBottom.x), static_cast<int>(particle[i].pos.screen.rightBottom.y),
+						0,0,1,1,ghWhite,
+						0xFFFFFF00 + static_cast<int>(255.0f * (static_cast<float>(particle[i].emitTimer) / static_cast<float>(particle[i].emitStartTimer)))
+					);
+				}
+			}
+			
 
 			// ボス
 			if (boss.respawn.isRespawn)
@@ -1047,14 +1081,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				if (bullet[i].isShot)
 				{
-					Novice::DrawQuad
-					(
-						static_cast<int>(bullet[i].pos.screen.leftTop.x), static_cast<int>(bullet[i].pos.screen.leftTop.y),
-						static_cast<int>(bullet[i].pos.screen.rightTop.x), static_cast<int>(bullet[i].pos.screen.rightTop.y),
-						static_cast<int>(bullet[i].pos.screen.leftBottom.x), static_cast<int>(bullet[i].pos.screen.leftBottom.y),
-						static_cast<int>(bullet[i].pos.screen.rightBottom.x), static_cast<int>(bullet[i].pos.screen.rightBottom.y),
-						0, 0, 1, 1, ghWhite, 0xFFFFFFFF
-					);
+					if (bullet[i].type != BULLET_TYPE_EXPLOSION)
+					{
+						Novice::DrawQuad
+						(
+							static_cast<int>(bullet[i].pos.screen.leftTop.x), static_cast<int>(bullet[i].pos.screen.leftTop.y),
+							static_cast<int>(bullet[i].pos.screen.rightTop.x), static_cast<int>(bullet[i].pos.screen.rightTop.y),
+							static_cast<int>(bullet[i].pos.screen.leftBottom.x), static_cast<int>(bullet[i].pos.screen.leftBottom.y),
+							static_cast<int>(bullet[i].pos.screen.rightBottom.x), static_cast<int>(bullet[i].pos.screen.rightBottom.y),
+							0, 0, 1, 1, ghWhite, 0xFFFFFFFF
+						);
+					}
 				}
 			}
 
