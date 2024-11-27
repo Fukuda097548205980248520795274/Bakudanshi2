@@ -760,7 +760,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			case MENU_RETURN:
 
-				if (!preKeys[DIK_SPACE] && keys[DIK_SPACE])
+				if (!preKeys[DIK_SPACE] && keys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 				{
 					if (isGameStop == false)
 					{
