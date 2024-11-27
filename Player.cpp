@@ -154,7 +154,7 @@ void PlayerMove(Player* player,Particle* particle, const char* keys, const char*
 				// 加速度で上に飛ぶ
 				player->jump.fallingVel = -0.5f;
 				ParticleEmission(particle, PARTICLE_TYPE_GRAVITY, player->shape.translate.x, player->shape.translate.y - player->shape.scale.y);
-				Novice::PlayAudio(sh->jump, 0, 0.17f);
+				Novice::PlayAudio(sh->jump, 0, 0.15f);
 			}
 		}
 	}
