@@ -638,6 +638,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameState = SCENE_MENU;
 
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 250, 300);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 800, 400);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 290, 600);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 1000, 200);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 500, 500);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 1190, 600);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 640, -100);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 150, -100);
+					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 390, 100);
+
 					gameFrame = 300;
 				}
 				else
@@ -651,6 +661,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawSprite(-200, -200, ghTitle, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
 			//Novice::DrawSprite(330, 220, ghTitleBar, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
 
+			
+			// パーティクルを動かす
+			PartivleMove(particle);
+
+			// パーティクル
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				particle[i].pos.screen = CoordinateTransformation(particle[i].pos.world);
+			}
 			Novice::DrawSprite
 			(
 				static_cast<int>(titlebar.pos.x - titlebar.radius.x),
@@ -658,6 +677,24 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				ghTitleBar,
 				1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 			);
+
+			// 放出された（放出フラグがtrueである）パーティクル
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				if (particle[i].isEmission)
+				{
+					Novice::DrawQuad
+					(
+						static_cast<int>(particle[i].pos.screen.leftTop.x), static_cast<int>(particle[i].pos.screen.leftTop.y),
+						static_cast<int>(particle[i].pos.screen.rightTop.x), static_cast<int>(particle[i].pos.screen.rightTop.y),
+						static_cast<int>(particle[i].pos.screen.leftBottom.x), static_cast<int>(particle[i].pos.screen.leftBottom.y),
+						static_cast<int>(particle[i].pos.screen.rightBottom.x), static_cast<int>(particle[i].pos.screen.rightBottom.y),
+						0, 0, 1, 1, ghWhite,
+						0xFFFFFF00 + static_cast<int>(255.0f * (static_cast<float>(particle[i].emitTimer) / static_cast<float>(particle[i].emitStartTimer)))
+					);
+				}
+			}
+
 
 			for (int i = 0; i < kItemNum; i++)
 			{
@@ -794,6 +831,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				break;
 			}
 
+			// パーティクルを動かす
+			PartivleMove(particle);
+
+			// パーティクル
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				particle[i].pos.screen = CoordinateTransformation(particle[i].pos.world);
+			}
+
 
 			/// 描画処理
 
@@ -895,12 +941,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			titlebar.pos = { 640.0f, -400.0f };
-			titlebar.velocity = { 0.0f, 10.0f };
-			titlebar.acceleration = { 0.0f, 0.1f };
-			titlebar.radius = { 300.0f, 200.0f };
-			titlebar.jumpCount = 3;
-			titlebar.isJump = true;
 
 			break;
 
