@@ -948,7 +948,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case SCENE_GAME:
 
-			// ゲームのメイン処理
+			// ゲームのメイン処理!
 
 			if (gameFrame < 450)
 			{
