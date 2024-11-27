@@ -507,3 +507,12 @@ typedef struct Item
 	// 図形
 	Shape shape;
 }Item;
+
+typedef struct Titlebar {
+	Vec2 pos;
+	Vec2 velocity;
+	Vec2 acceleration;
+	Vec2 radius;
+	int jumpCount;
+	int isJump;
+} Titlebar;

@@ -312,7 +312,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		item[i].type = -1;
 
-		item[i].shape.scale = {0.0f , 0.0f};
+		item[i].shape.scale = { 0.0f , 0.0f };
 		item[i].shape.theta = 0.0f;
 		item[i].shape.translate = { 0.0f , 0.0f };
 
@@ -367,6 +367,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int ghMenu = Novice::LoadTexture("./Resources/images/menu/menu.png");
 	int ghGameOver = Novice::LoadTexture("./Resources/images/menu/gameOver.png");
 	int ghGameClear = Novice::LoadTexture("./Resources/images/menu/gameClear.png");
+
+	// メニュー
+	int ghMenuExit = Novice::LoadTexture("./Resources/images/menu/menuExit.png");
+	int ghMenuStart = Novice::LoadTexture("./Resources/images/menu/menuStart.png");
 
 	// ステージ背景
 	int ghBgStage = Novice::LoadTexture("./Resources/images/bg/stage.png");
@@ -473,6 +477,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	sH.battle = Novice::LoadAudio("./Resources/Sounds/battle.mp3");
 	sH.pHbattle = -1;
 
+	Titlebar titlebar;
+	titlebar.pos = { 640.0f, -400.0f };
+	titlebar.velocity = { 0.0f, 10.0f };
+	titlebar.acceleration = { 0.0f, 0.1f };
+	titlebar.radius = { 300.0f, 200.0f };
+	titlebar.jumpCount = 3;
+	titlebar.isJump = true;
+
 	// フルスクリーンにする
 	SetFullScreen(GetActiveWindow());
 
@@ -484,6 +496,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// キー入力を受け取る
 		memcpy(preKeys, keys, 256);
 		Novice::GetHitKeyStateAll(keys);
+
+		// 左スティックを感知する
+		Novice::GetAnalogInputLeft(0, &leftStick.x, &leftStick.y);
 
 		// Rキーでタイトル画面に戻る
 		if (keys[DIK_R] && !preKeys[DIK_R]) {
@@ -531,31 +546,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			if (gameFrame == 250)
-			{
-				for (int i = 0; i < kItemNum; i++)
-				{
-					if (item[i].isShot == false)
-					{
-						item[i].isShot = true;
-
-						item[i].type = ITEM_TYPE_TITLE;
-
-						item[i].shape.scale = { 320.0f,180.0f };
-						item[i].shape.theta = 0.0f;
-						item[i].shape.translate = { 640.0f , 900.0f };
-
-						item[i].pos.world = VertexAffineMatrix(item[i].shape);
-
-						item[i].vel = { 0.0f , 8.0f };
-
-						item[i].acceleration = { 0.0f , 0.0f };
-
-						break;
-					}
-				}
-			}
-
 			for (int i = 0; i < kItemNum; i++)
 			{
 				if (item[i].isShot)
@@ -580,6 +570,52 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			//if (enemy[i].isAlive) {
+
+			//	// 加速度
+			//	enemy[i].velocity.y += enemy[i].acceleration.y;
+
+			//	// 速度
+			//	enemy[i].pos.x -= enemy[i].velocity.x;
+			//	enemy[i].pos.y -= enemy[i].velocity.y;
+
+			//	// 跳ね返り
+			//	if (enemy[i].pos.y <= enemy[i].radius) {
+			//		enemy[i].pos.y = enemy[i].radius;
+			//		enemy[i].velocity.y *= -enemy[i].cor;
+			//	}
+
+			//	// 画面外に出たら発射フラグをFalseに変更する
+			//	if (enemy[i].pos.x <= 0.0f - enemy[i].radius) {
+			//		enemy[i].isAlive = false;
+			//	}
+			//}
+
+
+			Novice::ScreenPrintf(100, 300, "%d", titlebar.jumpCount);
+
+			if (titlebar.isJump) {
+				// 加速度
+				titlebar.velocity.y += titlebar.acceleration.y;
+
+				// 速度
+				titlebar.pos.y += titlebar.velocity.y;
+
+				// 跳ね返り
+				if (titlebar.pos.y >= 600.0f - titlebar.radius.y) {
+					titlebar.pos.y = 600.0f - titlebar.radius.y;
+					titlebar.velocity.y *= -0.3f;
+					titlebar.jumpCount--;
+					//titlebar.isJump = false;
+				}
+			}
+
+			if (titlebar.jumpCount <= 0) {
+
+				titlebar.isJump = false;
+
+			}
+
 			// スペースキーでメニューへ
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
@@ -588,8 +624,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					gameState = SCENE_MENU;
 
 					gameFrame = 600;
-				}
-				else
+				} else
 				{
 					gameFrame = 600;
 				}
@@ -605,14 +640,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					Novice::DrawQuad
 					(
-						static_cast<int>(item[i].pos.screen.leftTop.x) , static_cast<int>(item[i].pos.screen.leftTop.y) ,
+						static_cast<int>(item[i].pos.screen.leftTop.x), static_cast<int>(item[i].pos.screen.leftTop.y),
 						static_cast<int>(item[i].pos.screen.rightTop.x), static_cast<int>(item[i].pos.screen.rightTop.y),
 						static_cast<int>(item[i].pos.screen.leftBottom.x), static_cast<int>(item[i].pos.screen.leftBottom.y),
 						static_cast<int>(item[i].pos.screen.rightBottom.x), static_cast<int>(item[i].pos.screen.rightBottom.y),
-						0,0,1,1,ghWhite,0xFFFFFFFF
+						0, 0, 1, 1, ghWhite, 0xFFFFFFFF
 					);
 				}
 			}
+
+			Novice::DrawBox
+			(
+				static_cast<int>(titlebar.pos.x - titlebar.radius.x),
+				static_cast<int>(titlebar.pos.y - titlebar.radius.y),
+				static_cast<int>(titlebar.radius.x * 2.0f),
+				static_cast<int>(titlebar.radius.y * 2.0f),
+				0.0f, 0xFFFFFFFF, kFillModeSolid
+			);
 
 			if (!Novice::IsPlayingAudio(sH.pHtitle) || sH.pHtitle == -1) {
 				sH.pHtitle = Novice::PlayAudio(sH.title, 1, 0.3f);
@@ -674,31 +718,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 				}
 
-				if (!preKeys[DIK_S] && keys[DIK_S] || leftStick.y < 0)
-				{
-					if (isGameStop == false)
-					{
-						menuNo = MENU_TUTORIAL;
-
-						Novice::PlayAudio(sH.cursor, 0, 1.0f);
-					}
-				}
-
-				break;
-
-			case MENU_TUTORIAL:
-
-				if (!preKeys[DIK_W] && keys[DIK_W] || leftStick.y > 0)
-				{
-					if (isGameStop == false)
-					{
-						menuNo = MENU_GAME_START;
-
-						Novice::PlayAudio(sH.cursor, 0, 1.0f);
-					}
-				}
-
-				if (!preKeys[DIK_S] && keys[DIK_S] || leftStick.y < 0)
+				if (!preKeys[DIK_S] && keys[DIK_S] || leftStick.y > 0)
 				{
 					if (isGameStop == false)
 					{
@@ -738,11 +758,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 				}
 
-				if (!preKeys[DIK_W] && keys[DIK_W] || leftStick.y > 0)
+				if (!preKeys[DIK_W] && keys[DIK_W] || leftStick.y < 0)
 				{
 					if (isGameStop == false)
 					{
-						menuNo = MENU_TUTORIAL;
+						menuNo = MENU_GAME_START;
 
 						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
@@ -766,17 +786,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				float easedT = powf(frameRate, 4);
 
-				Novice::DrawBox
+				Novice::DrawSprite
 				(
-					static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 900.0f) - 150, 200 - 50, 300, 100,
-					0.0f, 0xFFFFFFFF, kFillModeSolid
+					static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 600.0f) - 150, 320 - 50,
+					ghMenuStart,
+					1.0f, 1.0f, 0.0f, 0xFFFFFF88
 				);
+
 			} else
 			{
-				Novice::DrawBox
+
+				Novice::DrawSprite
 				(
-					900 - 150, 200 - 50, 300, 100,
-					0.0f, 0xFFFFFFFF, kFillModeSolid
+					600 - 150, 320 - 50,
+					ghMenuStart,
+					1.0f, 1.0f, 0.0f, 0xFFFFFF88
 				);
 			}
 
@@ -790,17 +814,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				float easedT = powf(frameRate, 4);
 
-				Novice::DrawBox
+				Novice::DrawSprite
 				(
-					static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 900.0f) - 150, 400 - 50, 300, 100,
-					0.0f, 0xFFFFFFFF, kFillModeSolid
+					static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 600.0f) - 150, 480 - 50,
+					ghMenuExit,
+					1.0f, 1.0f, 0.0f, 0xFFFFFF88
 				);
+
 			} else
 			{
-				Novice::DrawBox
+				Novice::DrawSprite
 				(
-					900 - 150, 400 - 50, 300, 100,
-					0.0f, 0xFFFFFFFF, kFillModeSolid
+					600 - 150, 480 - 50,
+					ghMenuExit,
+					1.0f, 1.0f, 0.0f, 0xFFFFFF88
 				);
 			}
 
@@ -817,13 +844,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 					float easedT = powf(frameRate, 4);
 
-					Novice::DrawBox
+					Novice::DrawSprite
 					(
-						static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 900.0f) - 150, 200 - 50, 300, 100,
-						0.0f, 0xFF0000FF, kFillModeSolid
+						static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 600.0f) - 150, 320 - 50,
+						ghMenuStart,
+						1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 					);
 				}
-			} else if (menuNo == MENU_TUTORIAL)
+			} else if (menuNo == MENU_RETURN)
 			{
 				// チュートリアル
 				if (gameFrame >= 600 && gameFrame <= 630)
@@ -835,10 +863,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 					float easedT = powf(frameRate, 4);
 
-					Novice::DrawBox
+					Novice::DrawSprite
 					(
-						static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 900.0f) - 150, 400 - 50, 300, 100,
-						0.0f, 0xFF0000FF, kFillModeSolid
+						static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 600.0f) - 150, 480 - 50,
+						ghMenuExit,
+						1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 					);
 				}
 			}
@@ -918,19 +947,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (hitStop.isStop == false)
 				{
 					// プレイヤーを操作する
-					PlayerMove(&player,particle, keys, preKeys, &leftStick, &sH);
+					PlayerMove(&player, particle, keys, preKeys, &leftStick, &sH);
 
 					// プレイヤーが爆弾を使う
-					PlayerBombUse(&player, bomb, bullet, keys, preKeys, &sH , particle);
+					PlayerBombUse(&player, bomb, bullet, keys, preKeys, &sH, particle);
 
 					// 爆弾を動かす
-					BombMove(bomb, bullet , particle, &sH);
+					BombMove(bomb, bullet, particle, &sH);
 
 					// 弾を動かす
-					BulletMove(bullet , particle);
+					BulletMove(bullet, particle);
 
 					// 敵を動かす
-					EnemyMove(enemy, &player , particle);
+					EnemyMove(enemy, &player, particle);
 
 					// ボスを動かす
 					BossMove(&boss, &player, bullet, enemy, particle, &backGround, &sH);
@@ -946,8 +975,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								if (boss.directionNo == DIRECTION_LEFT)
 								{
 									ParticleEmission(particle, PARTICLE_TYPE_SPARK_RIGHT, boss.shape.translate.x + boss.shape.scale.x, boss.shape.translate.y - boss.shape.scale.y);
-								}
-								else if (boss.directionNo == DIRECTION_RIGHT)
+								} else if (boss.directionNo == DIRECTION_RIGHT)
 								{
 									ParticleEmission(particle, PARTICLE_TYPE_SPARK_LEFT, boss.shape.translate.x - boss.shape.scale.x, boss.shape.translate.y - boss.shape.scale.y);
 								}
@@ -1215,16 +1243,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					Novice::DrawQuad
 					(
-						static_cast<int>(particle[i].pos.screen.leftTop.x) , static_cast<int>(particle[i].pos.screen.leftTop.y) ,
+						static_cast<int>(particle[i].pos.screen.leftTop.x), static_cast<int>(particle[i].pos.screen.leftTop.y),
 						static_cast<int>(particle[i].pos.screen.rightTop.x), static_cast<int>(particle[i].pos.screen.rightTop.y),
 						static_cast<int>(particle[i].pos.screen.leftBottom.x), static_cast<int>(particle[i].pos.screen.leftBottom.y),
 						static_cast<int>(particle[i].pos.screen.rightBottom.x), static_cast<int>(particle[i].pos.screen.rightBottom.y),
-						0,0,1,1,ghWhite,
+						0, 0, 1, 1, ghWhite,
 						0xFFFFFF00 + static_cast<int>(255.0f * (static_cast<float>(particle[i].emitTimer) / static_cast<float>(particle[i].emitStartTimer)))
 					);
 				}
 			}
-			
+
 
 			// ボス
 			if (boss.isArrival)
@@ -1744,8 +1772,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
 									64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 								);
-							}
-							else if (enemy[i].directionNo == DIRECTION_RIGHT)
+							} else if (enemy[i].directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1773,8 +1800,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							break;
 						}
 					}
-				} 
-				else
+				} else
 				{
 					switch (enemy[i].type)
 					{
@@ -1917,8 +1943,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									1924 * (player.frame / 8), 0, 1024, 954, ghCharPlayerRun, 0xFFFFFFFF
 								);
 							}
-						}
-						else
+						} else
 						{
 							if (player.directionNo == DIRECTION_LEFT)
 							{
@@ -1942,8 +1967,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								);
 							}
 						}
-					}
-					else
+					} else
 					{
 						if (player.isBomHave == false)
 						{
@@ -1957,8 +1981,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
 									0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
 								);
-							}
-							else if (player.directionNo == DIRECTION_RIGHT)
+							} else if (player.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1969,8 +1992,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
 								);
 							}
-						}
-						else
+						} else
 						{
 							if (player.directionNo == DIRECTION_LEFT)
 							{
@@ -1995,13 +2017,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							}
 						}
 					}
-				}
-				else
+				} else
 				{
 
 				}
-			} 
-			else
+			} else
 			{
 				if (player.directionNo == DIRECTION_LEFT)
 				{
@@ -2581,7 +2601,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				gameFrame = 600;
 			}
 
-			Novice::DrawSprite(0, 0, ghGameClear, 1, 1,0.0f, 0xFFFFFFFF);
+			Novice::DrawSprite(0, 0, ghGameClear, 1, 1, 0.0f, 0xFFFFFFFF);
 
 			break;
 		}
