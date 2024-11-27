@@ -580,7 +580,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			if (titlebar.isJump) {
-				// 加速度
+				// 加速度!
 				titlebar.velocity.y += titlebar.acceleration.y;
 
 				// 速度
