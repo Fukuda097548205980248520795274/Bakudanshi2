@@ -629,7 +629,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				gameFrame = 300;
 
-				Novice::PlayAudio(sH.decision, 0, 0.8f);
+				Novice::PlayAudio(sH.decision, 0, 4.3f);
 			}
 
 			// 描画処理
@@ -710,7 +710,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						isGameStop = true;
 
-						Novice::PlayAudio(sH.decision, 0, 0.8f);
+						Novice::PlayAudio(sH.decision, 0, 4.3f);
 
 						ParticleEmission(particle, PARTICLE_TYPE_BOMB, 640.0f, 380.0f);
 					}
@@ -763,6 +763,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						isGameStop = true;
 
+						Novice::PlayAudio(sH.decision, 0, 4.3f);
+
 						gameFrame = 330;
 					}
 				}
@@ -807,7 +809,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 
 			/// 描画処理
-
 			Novice::DrawSprite(0, 0, ghMenu, 1, 1, 0.0f, 0xFFFFFFFF);
 
 			// ゲームスタート
@@ -3042,7 +3043,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				gameFrame = 300;
 
-				Novice::PlayAudio(sH.decision, 0, 0.8f);
+				Novice::PlayAudio(sH.decision, 0, 4.3f);
 			}
 
 			if (!Novice::IsPlayingAudio(sH.pHmenu) || sH.pHmenu == -1) {
@@ -3326,7 +3327,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				gameFrame = 300;
 
-				Novice::PlayAudio(sH.decision, 0, 0.8f);
+				Novice::PlayAudio(sH.decision, 0, 4.3f);
 			}
 
 			Novice::DrawSprite(0, 0, ghGameClear, 1, 1, 0.0f, 0xFFFFFFFF);
