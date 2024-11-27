@@ -363,15 +363,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 白い図形
 	int ghWhite = Novice::LoadTexture("./NoviceResources/white1x1.png");
 
+	// タイトル
+	int ghMenu = Novice::LoadTexture("./Resources/images/menu/menu.png");
+	int ghGameOver = Novice::LoadTexture("./Resources/images/menu/gameOver.png");
+	int ghGameClear = Novice::LoadTexture("./Resources/images/menu/gameClear.png");
+
 	// ステージ背景
 	int ghBgStage = Novice::LoadTexture("./Resources/images/bg/stage.png");
 
 	// 爆弾
 	int ghItemBomb = Novice::LoadTexture("./Resources/images/item/bomb.png");
 
+	// 岩
+	int ghStone = Novice::LoadTexture("./Resources/images/item/rock.png");
+	int ghWave = Novice::LoadTexture("./Resources/images/item/wave.png");
+
 	// プレイヤー
 	int ghCharPlayer = Novice::LoadTexture("./Resources/images/char/player.png");
 	int ghCharPlayerRun = Novice::LoadTexture("./Resources/images/char/playerRun.png");
+	int ghCharPlayerBomb = Novice::LoadTexture("./Resources/images/char/playerBom.png");
 	int ghCharPlayerBombRun = Novice::LoadTexture("./Resources/images/char/playerBomRun.png");
 
 	// ボス
@@ -744,6 +754,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			/// 描画処理
 
+			Novice::DrawSprite(0, 0, ghMenu, 1, 1, 0.0f, 0xFFFFFFFF);
+
 			// ゲームスタート
 			if (gameFrame >= 600 && gameFrame <= 630)
 			{
@@ -909,7 +921,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					PlayerMove(&player,particle, keys, preKeys, &leftStick, &sH);
 
 					// プレイヤーが爆弾を使う
-					PlayerBombUse(&player, bomb, bullet, keys, preKeys, &sH);
+					PlayerBombUse(&player, bomb, bullet, keys, preKeys, &sH , particle);
 
 					// 爆弾を動かす
 					BombMove(bomb, bullet , particle, &sH);
@@ -1235,8 +1247,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							}
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1286,8 +1297,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							} 
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1316,8 +1326,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							} 
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1341,7 +1350,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								64 * ((boss.frame - 25) / 6), 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
 							);
 						}
-						
+
 						if (boss.frame > 48 && boss.frame < 60)
 						{
 							Novice::DrawQuad
@@ -1366,8 +1375,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							} 
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1416,8 +1424,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							} 
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1446,8 +1453,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							}
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1471,7 +1477,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								64 * ((boss.frame - 30) / 6), 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
 							);
 						}
-						
+
 						if (boss.frame > 53 && boss.frame < 80)
 						{
 							Novice::DrawQuad
@@ -1532,8 +1538,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							} 
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1562,8 +1567,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							}
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1600,8 +1604,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							}
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1630,8 +1633,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 								);
-							}
-							else if (boss.directionNo == DIRECTION_RIGHT)
+							} else if (boss.directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1695,21 +1697,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 						break;
 					}
-				}
-				else
+				} else
 				{
 					if (boss.directionNo == DIRECTION_LEFT)
 					{
 						Novice::DrawQuad
 						(
-							static_cast<int>(boss.pos.screen.leftTop.x) , static_cast<int>(boss.pos.screen.leftTop.y) ,
+							static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
 							static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
 							static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
 							static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
-							0 , 0 , 64 , 128 , ghCharBoss , 0xFFFFFFFF
+							0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 						);
-					} 
-					else if (boss.directionNo == DIRECTION_RIGHT)
+					} else if (boss.directionNo == DIRECTION_RIGHT)
 					{
 						Novice::DrawQuad
 						(
@@ -1825,16 +1825,47 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				if (bullet[i].isShot)
 				{
-					if (bullet[i].type != BULLET_TYPE_EXPLOSION)
+
+					switch (bullet[i].type)
 					{
+					case BULLET_TYPE_RUBBLE:
+
 						Novice::DrawQuad
 						(
 							static_cast<int>(bullet[i].pos.screen.leftTop.x), static_cast<int>(bullet[i].pos.screen.leftTop.y),
 							static_cast<int>(bullet[i].pos.screen.rightTop.x), static_cast<int>(bullet[i].pos.screen.rightTop.y),
 							static_cast<int>(bullet[i].pos.screen.leftBottom.x), static_cast<int>(bullet[i].pos.screen.leftBottom.y),
 							static_cast<int>(bullet[i].pos.screen.rightBottom.x), static_cast<int>(bullet[i].pos.screen.rightBottom.y),
-							0, 0, 1, 1, ghWhite, 0xFFFFFFFF
+							0, 0, 612, 612, ghStone, 0xFFFFFFFF
 						);
+
+						break;
+
+					case BULLET_TYPE_VIBRATION_LEFT:
+
+						Novice::DrawQuad
+						(
+							static_cast<int>(bullet[i].pos.screen.rightTop.x), static_cast<int>(bullet[i].pos.screen.rightTop.y),
+							static_cast<int>(bullet[i].pos.screen.leftTop.x), static_cast<int>(bullet[i].pos.screen.leftTop.y),
+							static_cast<int>(bullet[i].pos.screen.rightBottom.x), static_cast<int>(bullet[i].pos.screen.rightBottom.y),
+							static_cast<int>(bullet[i].pos.screen.leftBottom.x), static_cast<int>(bullet[i].pos.screen.leftBottom.y),
+							0, 0, 612, 306, ghWave, 0xFFFFFFFF
+						);
+
+						break;
+
+					case BULLET_TYPE_VIBRATION_RIGHT:
+
+						Novice::DrawQuad
+						(
+							static_cast<int>(bullet[i].pos.screen.leftTop.x), static_cast<int>(bullet[i].pos.screen.leftTop.y),
+							static_cast<int>(bullet[i].pos.screen.rightTop.x), static_cast<int>(bullet[i].pos.screen.rightTop.y),
+							static_cast<int>(bullet[i].pos.screen.leftBottom.x), static_cast<int>(bullet[i].pos.screen.leftBottom.y),
+							static_cast<int>(bullet[i].pos.screen.rightBottom.x), static_cast<int>(bullet[i].pos.screen.rightBottom.y),
+							0, 0, 612, 306, ghWave, 0xFFFFFFFF
+						);
+
+						break;
 					}
 				}
 			}
@@ -1914,51 +1945,60 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 					else
 					{
-						if (player.directionNo == DIRECTION_LEFT)
+						if (player.isBomHave == false)
 						{
-							Novice::DrawQuad
-							(
-								static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
-								static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
-								static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
-								static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
-								0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
-							);
-						} else if (player.directionNo == DIRECTION_RIGHT)
+							if (player.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
+								);
+							}
+							else if (player.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
+								);
+							}
+						}
+						else
 						{
-							Novice::DrawQuad
-							(
-								static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
-								static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
-								static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
-								static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
-								0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
-							);
+							if (player.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									0, 0, 1024, 1024, ghCharPlayerBomb, 0xFFFFFFFF
+								);
+							} else if (player.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									0, 0, 1024, 1024, ghCharPlayerBomb, 0xFFFFFFFF
+								);
+							}
 						}
 					}
-				} else
+				}
+				else
 				{
-					if (player.directionNo == DIRECTION_LEFT)
-					{
-						Novice::DrawQuad
-						(
-							static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
-							static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
-							static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
-							static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
-							0, 0, 1024, 1024, ghCharPlayer, 0xFF0000FF
-						);
-					} else if (player.directionNo == DIRECTION_RIGHT)
-					{
-						Novice::DrawQuad
-						(
-							static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
-							static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
-							static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
-							static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
-							0, 0, 1024, 1024, ghCharPlayer, 0xFF0000FF
-						);
-					}
+
 				}
 			} 
 			else
@@ -2001,11 +2041,268 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		case SCENE_GAME_OVER:
 
-			Novice::ScreenPrintf(100, 100, "game over");
+			/*   プレイヤー   */
+
+			// 復活
+			player.respawn.isRespawn = true;
+			player.respawn.timer = 120;
+
+			// 体力
+			player.damage.hp = 0;
+			player.damage.isDamage = false;
+			player.damage.timer = 30;
+
+			// 爆弾を持っているかどうか（爆弾所持フラグ）
+			player.isBomHave = false;
+
+			// 向ている方向
+			player.directionNo = -1;
+
+			// フレーム
+			player.frame = 0;
+
+			// 位置
+			player.pos.world = { {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} };
+			player.pos.screen = CoordinateTransformation(player.pos.world);
+
+			// 移動速度
+			player.vel = { 0.0f , 0.0f };
+
+			// ジャンプ
+			player.jump.isJump = false;
+			player.jump.count = 0;
+			player.jump.fallingVel = 0.0f;
+
+			// 図形
+			player.shape.scale = { 16.0f , 16.0f };
+			player.shape.theta = 0.0f;
+			player.shape.translate = { 0.0f , 0.0f };
+
+
+			/*   爆弾   */
+
+			for (int i = 0; i < kBombNum; i++)
+			{
+				// 復活
+				bomb[i].respawn.isRespawn = true;
+				bomb[i].respawn.timer = 120;
+
+				// 起動しているかどうか（起動フラグ）
+				bomb[i].isBoot = false;
+
+				// 発射されているかどうか（発射フラグ）
+				bomb[i].isShot = false;
+
+				// 制限時間
+				bomb[i].timeLimit = 0;
+
+				// 図形
+				bomb[i].shape.scale = { 0.0f , 0.0f };
+				bomb[i].shape.theta = 0.0f;
+				bomb[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				bomb[i].pos.world = VertexAffineMatrix(bomb[i].shape);
+				bomb[i].pos.screen = CoordinateTransformation(bomb[i].pos.world);
+
+				// 移動速度
+				bomb[i].vel = { 0.0f , 0.0f };
+
+				// 加速度
+				bomb[i].acceleration = { 0.0f , 0.0f };
+			}
+
+
+			/*   弾   */
+
+			for (int i = 0; i < kBulletNum; i++)
+			{
+				// 復活
+				bullet[i].respawn.isRespawn = true;
+				bullet[i].respawn.timer = 120;
+
+				// 発射しているかどうか（発射フラグ）
+				bullet[i].isShot = false;
+
+				// フレーム
+				bullet[i].frame = 0;
+
+				// 種類
+				bullet[i].type = -1;
+
+				// 図形
+				bullet[i].shape.scale = { 0.0f , 0.0f };
+				bullet[i].shape.theta = 0.0f;
+				bullet[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				bullet[i].pos.world = VertexAffineMatrix(bullet[i].shape);
+				bullet[i].pos.screen = CoordinateTransformation(bullet[i].pos.world);
+
+				// 移動速度
+				bullet[i].vel = { 0.0f , 0.0f };
+			}
+
+
+			/*   敵   */
+
+			for (int i = 0; i < kEnemyNum; i++)
+			{
+				// 復活
+				enemy[i].respawn.isRespawn = true;
+				enemy[i].respawn.timer = 120;
+
+				// ダメージ
+				enemy[i].damage.hp = 0;
+				enemy[i].damage.isDamage = false;
+				enemy[i].damage.timer = 30;
+
+				// 出現しているかどうか（出現フラグ）
+				enemy[i].isArrival = false;
+
+				// フレーム
+				enemy[i].frame = 0;
+
+				// 種類
+				enemy[i].type = -1;
+
+				// 向いている方向
+				enemy[i].directionNo = -1;
+
+				// 図形
+				enemy[i].shape.scale = { 0.0f , 0.0f };
+				enemy[i].shape.theta = 0.0f;
+				enemy[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				enemy[i].pos.world = VertexAffineMatrix(enemy[i].shape);
+				enemy[i].pos.screen = CoordinateTransformation(enemy[i].pos.world);
+
+				// ベクトル
+				enemy[i].vec = { 0.0f , 0.0f };
+
+				// 移動速度
+				enemy[i].vel = { 0.0f , 0.0f };
+			}
+
+
+			/*   ボス   */
+
+			// 復活
+			boss.respawn.isRespawn = true;
+			boss.respawn.timer = 120;
+
+			// ダメージ
+			boss.damage.hp = 0;
+			boss.damage.isDamage = false;
+			boss.damage.timer = 30;
+
+			// 出現しているかどうか（出現フラグ）
+			boss.isArrival = false;
+
+			// フレーム
+			boss.frame = 0;
+
+			// 種類
+			boss.type = -1;
+
+			// 向いている方向
+			boss.directionNo = -1;
+
+			// 攻撃しているかどうか（攻撃フラグ）
+			boss.isAttack = false;
+
+			// 現在の攻撃
+			boss.attackNo = -1;
+
+			// 図形
+			boss.shape.scale = { 0.0f , 0.0f };
+			boss.shape.theta = 0.0f;
+			boss.shape.translate = { 0.0f , 0.0f };
+
+			// 位置
+			boss.pos.world = VertexAffineMatrix(boss.shape);
+			boss.pos.screen = CoordinateTransformation(boss.pos.world);
+
+			// 移動速度
+			boss.vel = { 0.0f , 0.0f };
+
+			// ジャンプ
+			boss.jump.isJump = false;
+			boss.jump.fallingVel = 0.0f;
+			boss.jump.count = 0;
+
+
+			// ボスのシェイクの強さ
+			boss.shakeStrong = { 100,100 };
+			boss.shakeWeak = { 50,50 };
+
+			// ボスのシェイクの長さ
+			boss.shakeFrame = 50;
+
+
+			// 突進のフレーム
+			rushFrame = 0;
+
+
+			/*   パーティクル   */
+
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				// 放出しているかどうか（放出フラグ）
+				particle[i].isEmission = false;
+
+				// 放出する時間
+				particle[i].emitTimer = 0;
+
+				// 放出する開始時間
+				particle[i].emitStartTimer = 0;
+
+				// 種類
+				particle[i].type = -1;
+
+				// 図形
+				particle[i].shape.scale = { 0.0f , 0.0f };
+				particle[i].shape.theta = 0.0f;
+				particle[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				particle[i].pos.world = VertexAffineMatrix(particle[i].shape);
+				particle[i].pos.screen = CoordinateTransformation(particle[i].pos.world);
+
+				// ベクトル
+				particle[i].vec = { 0.0f , 0.0f };
+
+				// 移動速度
+				particle[i].vel = { 0.0f , 0.0f };
+			}
+
+
+			/*   アイテム   */
+
+			for (int i = 0; i < kItemNum; i++)
+			{
+				item[i].isShot = false;
+
+				item[i].type = -1;
+
+				item[i].shape.scale = { 0.0f , 0.0f };
+				item[i].shape.theta = 0.0f;
+				item[i].shape.translate = { 0.0f , 0.0f };
+
+				item[i].pos.world = VertexAffineMatrix(item[i].shape);
+				item[i].pos.screen = CoordinateTransformation(item[i].pos.world);
+
+				item[i].vel = { 0.0f , 0.0f };
+
+				item[i].acceleration = { 0.0f , 0.0f };
+			}
 
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
 				gameState = SCENE_TITLE;
+
+				gameFrame = 0;
 			}
 
 			if (!Novice::IsPlayingAudio(sH.pHmenu) || sH.pHmenu == -1) {
@@ -2014,18 +2311,275 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			Novice::StopAudio(sH.pHbattle);
 
+			Novice::DrawSprite(0, 0, ghGameOver, 1, 1, 0.0f, 0xFFFFFFFF);
+
 			break;
 
 		case SCENE_GAME_CLEAR:
 
-			Novice::ScreenPrintf(100, 100, "game clear");
+			/*   プレイヤー   */
+
+			// 復活
+			player.respawn.isRespawn = true;
+			player.respawn.timer = 120;
+
+			// 体力
+			player.damage.hp = 0;
+			player.damage.isDamage = false;
+			player.damage.timer = 30;
+
+			// 爆弾を持っているかどうか（爆弾所持フラグ）
+			player.isBomHave = false;
+
+			// 向ている方向
+			player.directionNo = -1;
+
+			// フレーム
+			player.frame = 0;
+
+			// 位置
+			player.pos.world = { {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} };
+			player.pos.screen = CoordinateTransformation(player.pos.world);
+
+			// 移動速度
+			player.vel = { 0.0f , 0.0f };
+
+			// ジャンプ
+			player.jump.isJump = false;
+			player.jump.count = 0;
+			player.jump.fallingVel = 0.0f;
+
+			// 図形
+			player.shape.scale = { 16.0f , 16.0f };
+			player.shape.theta = 0.0f;
+			player.shape.translate = { 0.0f , 0.0f };
+
+
+			/*   爆弾   */
+
+			for (int i = 0; i < kBombNum; i++)
+			{
+				// 復活
+				bomb[i].respawn.isRespawn = true;
+				bomb[i].respawn.timer = 120;
+
+				// 起動しているかどうか（起動フラグ）
+				bomb[i].isBoot = false;
+
+				// 発射されているかどうか（発射フラグ）
+				bomb[i].isShot = false;
+
+				// 制限時間
+				bomb[i].timeLimit = 0;
+
+				// 図形
+				bomb[i].shape.scale = { 0.0f , 0.0f };
+				bomb[i].shape.theta = 0.0f;
+				bomb[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				bomb[i].pos.world = VertexAffineMatrix(bomb[i].shape);
+				bomb[i].pos.screen = CoordinateTransformation(bomb[i].pos.world);
+
+				// 移動速度
+				bomb[i].vel = { 0.0f , 0.0f };
+
+				// 加速度
+				bomb[i].acceleration = { 0.0f , 0.0f };
+			}
+
+
+			/*   弾   */
+
+			for (int i = 0; i < kBulletNum; i++)
+			{
+				// 復活
+				bullet[i].respawn.isRespawn = true;
+				bullet[i].respawn.timer = 120;
+
+				// 発射しているかどうか（発射フラグ）
+				bullet[i].isShot = false;
+
+				// フレーム
+				bullet[i].frame = 0;
+
+				// 種類
+				bullet[i].type = -1;
+
+				// 図形
+				bullet[i].shape.scale = { 0.0f , 0.0f };
+				bullet[i].shape.theta = 0.0f;
+				bullet[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				bullet[i].pos.world = VertexAffineMatrix(bullet[i].shape);
+				bullet[i].pos.screen = CoordinateTransformation(bullet[i].pos.world);
+
+				// 移動速度
+				bullet[i].vel = { 0.0f , 0.0f };
+			}
+
+
+			/*   敵   */
+
+			for (int i = 0; i < kEnemyNum; i++)
+			{
+				// 復活
+				enemy[i].respawn.isRespawn = true;
+				enemy[i].respawn.timer = 120;
+
+				// ダメージ
+				enemy[i].damage.hp = 0;
+				enemy[i].damage.isDamage = false;
+				enemy[i].damage.timer = 30;
+
+				// 出現しているかどうか（出現フラグ）
+				enemy[i].isArrival = false;
+
+				// フレーム
+				enemy[i].frame = 0;
+
+				// 種類
+				enemy[i].type = -1;
+
+				// 向いている方向
+				enemy[i].directionNo = -1;
+
+				// 図形
+				enemy[i].shape.scale = { 0.0f , 0.0f };
+				enemy[i].shape.theta = 0.0f;
+				enemy[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				enemy[i].pos.world = VertexAffineMatrix(enemy[i].shape);
+				enemy[i].pos.screen = CoordinateTransformation(enemy[i].pos.world);
+
+				// ベクトル
+				enemy[i].vec = { 0.0f , 0.0f };
+
+				// 移動速度
+				enemy[i].vel = { 0.0f , 0.0f };
+			}
+
+
+			/*   ボス   */
+
+			// 復活
+			boss.respawn.isRespawn = true;
+			boss.respawn.timer = 120;
+
+			// ダメージ
+			boss.damage.hp = 0;
+			boss.damage.isDamage = false;
+			boss.damage.timer = 30;
+
+			// 出現しているかどうか（出現フラグ）
+			boss.isArrival = false;
+
+			// フレーム
+			boss.frame = 0;
+
+			// 種類
+			boss.type = -1;
+
+			// 向いている方向
+			boss.directionNo = -1;
+
+			// 攻撃しているかどうか（攻撃フラグ）
+			boss.isAttack = false;
+
+			// 現在の攻撃
+			boss.attackNo = -1;
+
+			// 図形
+			boss.shape.scale = { 0.0f , 0.0f };
+			boss.shape.theta = 0.0f;
+			boss.shape.translate = { 0.0f , 0.0f };
+
+			// 位置
+			boss.pos.world = VertexAffineMatrix(boss.shape);
+			boss.pos.screen = CoordinateTransformation(boss.pos.world);
+
+			// 移動速度
+			boss.vel = { 0.0f , 0.0f };
+
+			// ジャンプ
+			boss.jump.isJump = false;
+			boss.jump.fallingVel = 0.0f;
+			boss.jump.count = 0;
+
+
+			// ボスのシェイクの強さ
+			boss.shakeStrong = { 100,100 };
+			boss.shakeWeak = { 50,50 };
+
+			// ボスのシェイクの長さ
+			boss.shakeFrame = 50;
+
+
+			// 突進のフレーム
+			rushFrame = 0;
+
+
+			/*   パーティクル   */
+
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				// 放出しているかどうか（放出フラグ）
+				particle[i].isEmission = false;
+
+				// 放出する時間
+				particle[i].emitTimer = 0;
+
+				// 放出する開始時間
+				particle[i].emitStartTimer = 0;
+
+				// 種類
+				particle[i].type = -1;
+
+				// 図形
+				particle[i].shape.scale = { 0.0f , 0.0f };
+				particle[i].shape.theta = 0.0f;
+				particle[i].shape.translate = { 0.0f , 0.0f };
+
+				// 位置
+				particle[i].pos.world = VertexAffineMatrix(particle[i].shape);
+				particle[i].pos.screen = CoordinateTransformation(particle[i].pos.world);
+
+				// ベクトル
+				particle[i].vec = { 0.0f , 0.0f };
+
+				// 移動速度
+				particle[i].vel = { 0.0f , 0.0f };
+			}
+
+
+			/*   アイテム   */
+
+			for (int i = 0; i < kItemNum; i++)
+			{
+				item[i].isShot = false;
+
+				item[i].type = -1;
+
+				item[i].shape.scale = { 0.0f , 0.0f };
+				item[i].shape.theta = 0.0f;
+				item[i].shape.translate = { 0.0f , 0.0f };
+
+				item[i].pos.world = VertexAffineMatrix(item[i].shape);
+				item[i].pos.screen = CoordinateTransformation(item[i].pos.world);
+
+				item[i].vel = { 0.0f , 0.0f };
+
+				item[i].acceleration = { 0.0f , 0.0f };
+			}
 
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
 				gameState = SCENE_TITLE;
-			}
 
-			Novice::StopAudio(sH.pHbattle);
+				gameFrame = 600;
+			}
 
 			break;
 		}

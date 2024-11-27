@@ -214,10 +214,10 @@ void PlayerMove(Player* player,Particle* particle, const char* keys, const char*
 /// <param name="bullet">弾</param>
 /// <param name="keys">キー</param>
 /// <param name="preKeys">前に押したキー</param>
-void PlayerBombUse(Player* player, Bomb* bomb, Bullet* bullet, const char* keys, const char* preKeys, SH* sh)
+void PlayerBombUse(Player* player, Bomb* bomb, Bullet* bullet, const char* keys, const char* preKeys, SH* sh , Particle* particle)
 {
 	// nullを探す
-	if (player == nullptr || bomb == nullptr || keys == nullptr || preKeys == nullptr)
+	if (player == nullptr || bomb == nullptr || keys == nullptr || preKeys == nullptr || particle == nullptr)
 	{
 		return;
 	}
@@ -294,7 +294,8 @@ void PlayerBombUse(Player* player, Bomb* bomb, Bullet* bullet, const char* keys,
 				if (bomb[i].timeLimit <= 0)
 				{
 					// 爆発する
-					BulletShot(bullet, BULLET_TYPE_EXPLOSION, bomb[i].pos.world.leftBottom.x + bomb[i].shape.scale.x, bomb[i].pos.world.leftBottom.y + bomb[i].shape.scale.y);
+					BulletShot(bullet, BULLET_TYPE_EXPLOSION, bomb[i].shape.translate.x, bomb[i].shape.translate.y);
+					ParticleEmission(particle, PARTICLE_TYPE_BOMB, bomb[i].shape.translate.x, bomb[i].shape.translate.y);
 
 					bomb[i].isBoot = false;
 					bomb[i].isShot = false;
