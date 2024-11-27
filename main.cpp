@@ -678,6 +678,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 			);
 
+
+			for (int i = 0; i < kItemNum; i++)
+			{
+				if (item[i].isShot)
+				{
+					Novice::DrawQuad
+					(
+						static_cast<int>(item[i].pos.screen.leftTop.x), static_cast<int>(item[i].pos.screen.leftTop.y),
+						static_cast<int>(item[i].pos.screen.rightTop.x), static_cast<int>(item[i].pos.screen.rightTop.y),
+						static_cast<int>(item[i].pos.screen.leftBottom.x), static_cast<int>(item[i].pos.screen.leftBottom.y),
+						static_cast<int>(item[i].pos.screen.rightBottom.x), static_cast<int>(item[i].pos.screen.rightBottom.y),
+						0, 0, 1024, 1024, ghItemBomb, 0xFFFFFFFF
+					);
+				}
+			}
+
 			// 放出された（放出フラグがtrueである）パーティクル
 			for (int i = 0; i < kParticleNum; i++)
 			{
@@ -695,22 +711,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-
-			for (int i = 0; i < kItemNum; i++)
-			{
-				if (item[i].isShot)
-				{
-					Novice::DrawQuad
-					(
-						static_cast<int>(item[i].pos.screen.leftTop.x), static_cast<int>(item[i].pos.screen.leftTop.y),
-						static_cast<int>(item[i].pos.screen.rightTop.x), static_cast<int>(item[i].pos.screen.rightTop.y),
-						static_cast<int>(item[i].pos.screen.leftBottom.x), static_cast<int>(item[i].pos.screen.leftBottom.y),
-						static_cast<int>(item[i].pos.screen.rightBottom.x), static_cast<int>(item[i].pos.screen.rightBottom.y),
-						0, 0, 1024, 1024, ghItemBomb, 0xFFFFFFFF
-					);
-				}
-			}
-
 			if (!Novice::IsPlayingAudio(sH.pHtitle) || sH.pHtitle == -1) {
 				sH.pHtitle = Novice::PlayAudio(sH.title, 1, 0.3f);
 			}
@@ -723,7 +723,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			/// 更新処理
 
-			// 630フレームまで進める
+			// 330フレームまで進める
 			if (isGameStop == false)
 			{
 				if (gameFrame < 330)
@@ -937,6 +937,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						static_cast<int>((1.0f - easedT) * 1500.0f + easedT * 600.0f) - 150, 480 - 50,
 						ghMenuExit,
 						1.0f, 1.0f, 0.0f, 0xFFFFFFFF
+					);
+				}
+			}
+
+			// 放出された（放出フラグがtrueである）パーティクル
+			for (int i = 0; i < kParticleNum; i++)
+			{
+				if (particle[i].isEmission)
+				{
+					Novice::DrawQuad
+					(
+						static_cast<int>(particle[i].pos.screen.leftTop.x), static_cast<int>(particle[i].pos.screen.leftTop.y),
+						static_cast<int>(particle[i].pos.screen.rightTop.x), static_cast<int>(particle[i].pos.screen.rightTop.y),
+						static_cast<int>(particle[i].pos.screen.leftBottom.x), static_cast<int>(particle[i].pos.screen.leftBottom.y),
+						static_cast<int>(particle[i].pos.screen.rightBottom.x), static_cast<int>(particle[i].pos.screen.rightBottom.y),
+						0, 0, 1, 1, ghWhite,
+						0xFFFFFF00 + static_cast<int>(255.0f * (static_cast<float>(particle[i].emitTimer) / static_cast<float>(particle[i].emitStartTimer)))
 					);
 				}
 			}
