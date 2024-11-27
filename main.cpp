@@ -528,7 +528,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 描画処理
 			Novice::DrawSprite(-200, -200, ghTitle, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
-			Novice::DrawSprite(33960, 220, ghTitleBar, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
+			Novice::DrawSprite(330, 220, ghTitleBar, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
 
 
 			if (!Novice::IsPlayingAudio(sH.pHtitle) || sH.pHtitle == -1) {
@@ -1659,7 +1659,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 					else
 					{
-						int randamX = Shake(40);
+						int randamX =  Shake(40);
 						int randamY = Shake(40);
 
 						if (boss.isAttack)
