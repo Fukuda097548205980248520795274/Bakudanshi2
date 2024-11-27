@@ -650,22 +650,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				1.0f, 1.0f, 0.0f, 0xFFFFFFFF
 			);
 
-
-			for (int i = 0; i < kItemNum; i++)
-			{
-				if (item[i].isShot)
-				{
-					Novice::DrawQuad
-					(
-						static_cast<int>(item[i].pos.screen.leftTop.x), static_cast<int>(item[i].pos.screen.leftTop.y),
-						static_cast<int>(item[i].pos.screen.rightTop.x), static_cast<int>(item[i].pos.screen.rightTop.y),
-						static_cast<int>(item[i].pos.screen.leftBottom.x), static_cast<int>(item[i].pos.screen.leftBottom.y),
-						static_cast<int>(item[i].pos.screen.rightBottom.x), static_cast<int>(item[i].pos.screen.rightBottom.y),
-						0, 0, 1024, 1024, ghItemBomb, 0xFFFFFFFF
-					);
-				}
-			}
-
 			// 放出された（放出フラグがtrueである）パーティクル!
 			for (int i = 0; i < kParticleNum; i++)
 			{
@@ -737,6 +721,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						// ボスを出現させる
 						BossArrival(&boss, BOSS_TYPE_STAGE_1);
 
+						Novice::PlayAudio(sH.tutorial, 0, 3.0f);
 						gameState = SCENE_TUTORIAL;
 
 						isGameStop = false;
@@ -938,9 +923,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			if (gameFrame >= 330)
 			{
-				if (!preKeys[DIK_SPACE] && keys[DIK_SPACE])
+				if (!preKeys[DIK_SPACE] && keys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 				{
 					gameState = SCENE_GAME;
+
+					Novice::PlayAudio(sH.tutorial, 0, 3.0f);
+
 				}
 			}
 
