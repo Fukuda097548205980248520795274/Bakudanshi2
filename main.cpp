@@ -570,28 +570,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			//if (enemy[i].isAlive) {
-
-			//	// 加速度
-			//	enemy[i].velocity.y += enemy[i].acceleration.y;
-
-			//	// 速度
-			//	enemy[i].pos.x -= enemy[i].velocity.x;
-			//	enemy[i].pos.y -= enemy[i].velocity.y;
-
-			//	// 跳ね返り
-			//	if (enemy[i].pos.y <= enemy[i].radius) {
-			//		enemy[i].pos.y = enemy[i].radius;
-			//		enemy[i].velocity.y *= -enemy[i].cor;
-			//	}
-
-			//	// 画面外に出たら発射フラグをFalseに変更する
-			//	if (enemy[i].pos.x <= 0.0f - enemy[i].radius) {
-			//		enemy[i].isAlive = false;
-			//	}
-			//}
-
-
 			Novice::ScreenPrintf(100, 300, "%d", titlebar.jumpCount);
 
 			if (titlebar.isJump) {
