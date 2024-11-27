@@ -2729,12 +2729,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					if (bomb[i].isBoot && bomb[i].isShot == false)
 					{
-						Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0x00FF00FF, kFillModeSolid);
+						if (bomb[i].timeLimit >= 135)
+						{
+							Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0x00FF00FF, kFillModeSolid);
+						}
+						else if (bomb[i].timeLimit >= 90)
+						{
+							Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0xFFFF00FF, kFillModeSolid);
+						}
+						else
+						{
+							Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0xFF0000FF, kFillModeSolid);
+						}
 					}
 				}
 			}
 
-			// bgm
+			// bgm!
 			if (!Novice::IsPlayingAudio(sH.pHbattle) || sH.pHbattle == -1) {
 				sH.pHbattle = Novice::PlayAudio(sH.battle, 1, 0.3f);
 			}
