@@ -403,9 +403,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// プレイヤーの着地
 	sH.land = Novice::LoadAudio("./Resources/Sounds/land.mp3");
 
+	// プレイヤ死亡
+	sH.playerKO = Novice::LoadAudio("./Resources/Sounds/ko.mp3");
+
 	// 爆弾の導火線
 	sH.bomCount = Novice::LoadAudio("./Resources/Sounds/bomCount.mp3");
 	sH.pHBomCount = -1;
+	sH.volumeBomCount = 0.4f;
 
 	// 爆弾の爆発
 	sH.explosive = Novice::LoadAudio("./Resources/Sounds/bom.mp3");
@@ -424,6 +428,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 天井に当たる
 	sH.hitSelling = Novice::LoadAudio("./Resources/Sounds/hitCelling.mp3");
 
+	// 落石
+	sH.fallingRock = Novice::LoadAudio("./Resources/Sounds/fallingRock.mp3");
+	sH.pHfallingRock = -1;
+
 	// 振動
 	sH.earthqueke = Novice::LoadAudio("./Resources/Sounds/earthqueke.mp3");
 	sH.pHEarthqueke = -1;
@@ -437,6 +445,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 雑魚敵召喚
 	sH.enemyStart = Novice::LoadAudio("./Resources/Sounds/enemyStart.mp3");
 	sH.flyingEnemyStart = Novice::LoadAudio("./Resources/Sounds/flyingEnemyStart.mp3");
+	sH.pHEnemyStart = -1;
+
+	// カーソル音
+	sH.cursor = Novice::LoadAudio("./Resources/Sounds/cursor.mp3");
+
+	// 決定
+	sH.decision = Novice::LoadAudio("./Resources/Sounds/decision.mp3");
+
+	// bgm
+	sH.menu = Novice::LoadAudio("./Resources/Sounds/menu.mp3");
+	sH.pHmenu = -1;
+
+	sH.title = Novice::LoadAudio("./Resources/Sounds/title.mp3");
+	sH.pHtitle = -1;
+
+	sH.battle = Novice::LoadAudio("./Resources/Sounds/battle.mp3");
+	sH.pHbattle = -1;
 
 	// フルスクリーンにする
 	SetFullScreen(GetActiveWindow());
@@ -558,6 +583,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameFrame = 600;
 				}
+				Novice::PlayAudio(sH.decision, 0, 0.8f);
 			}
 
 
@@ -578,6 +604,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			if (!Novice::IsPlayingAudio(sH.pHtitle) || sH.pHtitle == -1) {
+				sH.pHtitle = Novice::PlayAudio(sH.title, 1, 0.3f);
+			}
+
+			Novice::StopAudio(sH.pHmenu);
+
 			break;
 
 		case SCENE_MENU:
@@ -593,6 +625,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			if (!Novice::IsPlayingAudio(sH.pHmenu) || sH.pHmenu == -1) {
+				sH.pHmenu = Novice::PlayAudio(sH.menu, 1, 0.3f);
+			}
+
+			Novice::StopAudio(sH.pHtitle);
+
 			switch (menuNo)
 			{
 			case MENU_GAME_START:
@@ -603,6 +641,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					if (isGameStop == false)
 					{
 						isGameStop = true;
+
+						Novice::PlayAudio(sH.decision, 0, 0.8f);
 					}
 				}
 
@@ -620,14 +660,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						gameState = SCENE_GAME;
 
 						isGameStop = false;
+
 					}
 				}
 
-				if (!preKeys[DIK_S] && keys[DIK_S])
+				if (!preKeys[DIK_S] && keys[DIK_S] || leftStick.y < 0)
 				{
 					if (isGameStop == false)
 					{
 						menuNo = MENU_TUTORIAL;
+
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
@@ -635,19 +678,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			case MENU_TUTORIAL:
 
-				if (!preKeys[DIK_W] && keys[DIK_W])
+				if (!preKeys[DIK_W] && keys[DIK_W] || leftStick.y > 0)
 				{
 					if (isGameStop == false)
 					{
 						menuNo = MENU_GAME_START;
+
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
-				if (!preKeys[DIK_S] && keys[DIK_S])
+				if (!preKeys[DIK_S] && keys[DIK_S] || leftStick.y < 0)
 				{
 					if (isGameStop == false)
 					{
 						menuNo = MENU_RETURN;
+
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
@@ -681,11 +728,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					}
 				}
 
-				if (!preKeys[DIK_W] && keys[DIK_W])
+				if (!preKeys[DIK_W] && keys[DIK_W] || leftStick.y > 0)
 				{
 					if (isGameStop == false)
 					{
 						menuNo = MENU_TUTORIAL;
+
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
@@ -1937,7 +1986,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			// bgm
+			if (!Novice::IsPlayingAudio(sH.pHbattle) || sH.pHbattle == -1) {
+				sH.pHbattle = Novice::PlayAudio(sH.battle, 1, 0.3f);
+			}
+
+			Novice::StopAudio(sH.pHmenu);
+
 			Novice::ScreenPrintf(100, 100, "%d", player.damage.hp);
+
+			Novice::ScreenPrintf(100, 200, "%f", sH.volumeBomCount);
 
 			break;
 
@@ -1950,6 +2008,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				gameState = SCENE_TITLE;
 			}
 
+			if (!Novice::IsPlayingAudio(sH.pHmenu) || sH.pHmenu == -1) {
+				sH.pHmenu = Novice::PlayAudio(sH.menu, 1, 0.3f);
+			}
+
+			Novice::StopAudio(sH.pHbattle);
+
 			break;
 
 		case SCENE_GAME_CLEAR:
@@ -1960,6 +2024,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				gameState = SCENE_TITLE;
 			}
+
+			Novice::StopAudio(sH.pHbattle);
 
 			break;
 		}
