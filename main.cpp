@@ -673,6 +673,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			Novice::StopAudio(sH.pHmenu);
 			Novice::StopAudio(sH.pHbattle);
+			Novice::StopAudio(sH.pHclear);
 
 			break;
 
@@ -1333,7 +1334,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					);
 				}
 			}
-
 
 			// ボス
 			if (isChance == false)

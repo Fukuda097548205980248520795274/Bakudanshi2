@@ -65,7 +65,7 @@ void EnemyArrival(Enemy* enemy, int type, float posX, float posY, SH* sh)
 				enemy[i].vel = { 0.0f , 0.0f };
 
 				if (!Novice::IsPlayingAudio(sh->pHEnemyStart) || sh->pHEnemyStart == -1) {
-					sh->pHEnemyStart = Novice::PlayAudio(sh->enemyStart, 0, 0.8f);
+					sh->pHEnemyStart = Novice::PlayAudio(sh->enemyStart, 0, 0.3f);
 				}
 
 				break;
