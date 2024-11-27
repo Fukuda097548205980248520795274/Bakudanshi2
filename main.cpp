@@ -711,6 +711,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						isGameStop = true;
 
 						Novice::PlayAudio(sH.decision, 0, 0.8f);
+
+						ParticleEmission(particle, PARTICLE_TYPE_BOMB, 640.0f, 380.0f);
 					}
 				}
 
@@ -753,6 +755,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				break;
 
 			case MENU_RETURN:
+				// Exit
 
 				if (!preKeys[DIK_SPACE] && keys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 				{
