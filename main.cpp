@@ -1037,6 +1037,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (boss.damage.hp <= 0)
 				{
 					isChance = true;
+
+					Novice::StopAudio(sH.pHEarthqueke);
+					Novice::StopAudio(sH.pHEnemyStart);
+					Novice::StopAudio(sH.pHBomCount);
+					Novice::StopAudio(sH.pHfallingRock);
+
 				}
 
 				if (hitStop.isStop == false)
@@ -3018,6 +3024,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			Novice::StopAudio(sH.pHbattle);
+			Novice::StopAudio(sH.pHEarthqueke);
+			Novice::StopAudio(sH.pHEnemyStart);
+			Novice::StopAudio(sH.pHBomCount);
+			Novice::StopAudio(sH.pHfallingRock);
 
 			Novice::DrawSprite(0, 0, ghGameOver, 1, 1, 0.0f, 0xFFFFFFFF);
 
@@ -3284,9 +3294,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				item[i].acceleration = { 0.0f , 0.0f };
 			}
 
-
-			Novice::StopAudio(sH.pHbattle);
-
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
 				gameState = SCENE_TITLE;
@@ -3302,6 +3309,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			Novice::StopAudio(sH.pHbattle);
+			Novice::StopAudio(sH.pHEarthqueke);
+			Novice::StopAudio(sH.pHEnemyStart);
+			Novice::StopAudio(sH.pHBomCount);
+			Novice::StopAudio(sH.pHfallingRock);
 
 			break;
 		}
