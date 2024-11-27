@@ -261,6 +261,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	boss.shakeFrame = 50;
 
 
+	// 突進のフレーム
+	int rushFrame = 0;
+
+
 	/*   パーティクル   */
 
 	// 構造体
@@ -863,6 +867,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					// ボスを動かす
 					BossMove(&boss, &player, bullet, enemy, particle, &backGround, &sH);
 
+					rushFrame++;
+
+					if (boss.attackNo == 0)
+					{
+						if (boss.frame == 20)
+						{
+							if (rushFrame % 5 == 0)
+							{
+								if (boss.directionNo == DIRECTION_LEFT)
+								{
+									ParticleEmission(particle, PARTICLE_TYPE_SPARK_RIGHT, boss.shape.translate.x + boss.shape.scale.x, boss.shape.translate.y - boss.shape.scale.y);
+								}
+								else if (boss.directionNo == DIRECTION_RIGHT)
+								{
+									ParticleEmission(particle, PARTICLE_TYPE_SPARK_LEFT, boss.shape.translate.x - boss.shape.scale.x, boss.shape.translate.y - boss.shape.scale.y);
+								}
+							}
+						}
+					}
+
+					if (rushFrame >= 20)
+					{
+						rushFrame = 0;
+					}
+
 					// パーティクルを動かす
 					PartivleMove(particle);
 
@@ -1200,9 +1229,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
 									static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
 									static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
-									0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+									64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 								);
-							} else if (enemy[i].directionNo == DIRECTION_RIGHT)
+							}
+							else if (enemy[i].directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1210,7 +1240,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
 									static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
 									static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
-									0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+									64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 								);
 							}
 
@@ -1224,13 +1254,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
 								static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
 								static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
-								0, 0, 1024, 1024, ghCharEnemyFlying, 0xFFFFFFFF
+								64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyFlying, 0xFFFFFFFF
 							);
 
 							break;
 						}
 					}
-				} else
+				} 
+				else
 				{
 					switch (enemy[i].type)
 					{
@@ -1244,7 +1275,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
 								static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
 								static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
-								0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+								64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 							);
 						} else if (enemy[i].directionNo == DIRECTION_RIGHT)
 						{
@@ -1254,7 +1285,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
 								static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
 								static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
-								0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+								64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 							);
 						}
 
@@ -1268,7 +1299,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
 							static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
 							static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
-							0, 0, 1024, 1024, ghCharEnemyFlying, 0xFFFFFFFF
+							64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyFlying, 0xFFFFFFFF
 						);
 
 						break;
