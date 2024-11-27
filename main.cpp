@@ -419,6 +419,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 敵（空中）
 	int ghCharEnemyFlying = Novice::LoadTexture("./Resources/images/char/enemy_flying.png");
 
+	// チャンス
+	int ghChance = Novice::LoadTexture("./Resources/images/menu/chance.png");
+
 
 	/*   効果音   */
 
@@ -2349,6 +2352,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				int randamX = Shake(20);
 				int randamY = Shake(20);
+
+				if (boss.respawn.isRespawn)
+				{
+					Novice::DrawSprite
+					(
+						static_cast<int>(boss.pos.screen.leftBottom.x + boss.shape.scale.x) - 147 + randamX,
+						static_cast<int>(boss.pos.screen.leftBottom.y - boss.shape.scale.y) - 220 + randamY,
+						ghChance, 1, 1, 0.0f, 0xFFFFFFFF
+					);
+				}
 
 				if (boss.directionNo == DIRECTION_LEFT)
 				{
