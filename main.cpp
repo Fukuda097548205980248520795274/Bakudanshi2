@@ -495,6 +495,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	sH.clear = Novice::LoadAudio("./Resources/Sounds/clear.mp3");
 	sH.pHclear = -1;
 
+	sH.tutorial = Novice::LoadAudio("./Resources/Sounds/tutorial.mp3");
+
 	Titlebar titlebar;
 	titlebar.pos = { 640.0f, -400.0f };
 	titlebar.velocity = { 0.0f, 10.0f };
@@ -2981,6 +2983,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				gameState = SCENE_TITLE;
 
 				gameFrame = 300;
+
+				Novice::PlayAudio(sH.decision, 0, 0.8f);
 			}
 
 			if (!Novice::IsPlayingAudio(sH.pHmenu) || sH.pHmenu == -1) {
@@ -3263,6 +3267,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				gameState = SCENE_TITLE;
 
 				gameFrame = 300;
+
+				Novice::PlayAudio(sH.decision, 0, 0.8f);
 			}
 
 			Novice::DrawSprite(0, 0, ghGameClear, 1, 1, 0.0f, 0xFFFFFFFF);
