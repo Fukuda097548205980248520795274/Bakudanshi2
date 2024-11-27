@@ -2745,7 +2745,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			// bgm
+			// bgm!
 			if (!Novice::IsPlayingAudio(sH.pHbattle) || sH.pHbattle == -1) {
 				sH.pHbattle = Novice::PlayAudio(sH.battle, 1, 0.3f);
 			}
