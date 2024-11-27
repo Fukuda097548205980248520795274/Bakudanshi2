@@ -1,5 +1,7 @@
 #include <Novice.h>
 #include <math.h>
+#include <stdlib.h>
+#include <time.h>
 #include "Structure.h"
 #include "Constant.h"
 #include "Enumeration.h"
@@ -26,6 +28,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
+
+	// 乱数
+	unsigned int currentTimer = static_cast<unsigned int>(time(nullptr));
+	srand(currentTimer);
 
 	/*------------------------------
 		変数を作り、初期値を入れる
@@ -71,6 +77,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 向ている方向
 	player.directionNo = -1;
+
+	// フレーム
+	player.frame = 0;
 
 	// 位置
 	player.pos.world = { {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} };
@@ -288,6 +297,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	}
 
 
+	/*   アイテム   */
+
+	// 構造体
+	Item item[kItemNum];
+
+	for (int i = 0; i < kItemNum; i++)
+	{
+		item[i].isShot = false;
+
+		item[i].type = -1;
+
+		item[i].shape.scale = {0.0f , 0.0f};
+		item[i].shape.theta = 0.0f;
+		item[i].shape.translate = { 0.0f , 0.0f };
+
+		item[i].pos.world = VertexAffineMatrix(item[i].shape);
+		item[i].pos.screen = CoordinateTransformation(item[i].pos.world);
+
+		item[i].vel = { 0.0f , 0.0f };
+
+		item[i].acceleration = { 0.0f , 0.0f };
+	}
+
+
 	/*   コントローラーの左スティック   */
 
 	// 構造体
@@ -416,16 +449,123 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 		case SCENE_TITLE:
 
+			if (gameFrame < 600)
+			{
+				gameFrame++;
+			}
+
+			if (gameFrame >= 60 && gameFrame <= 180)
+			{
+				if (gameFrame % 20 == 0)
+				{
+					for (int i = 0; i < 5; i++)
+					{
+						for (int j = 0; j < kItemNum; j++)
+						{
+							if (item[j].isShot == false)
+							{
+								item[j].isShot = true;
+
+								item[j].type = ITEM_TYPE_BOM;
+
+								item[j].shape.scale = { 32.0f,32.0f };
+								item[j].shape.theta = static_cast<float>(rand() % 360);
+								item[j].shape.translate = { static_cast<float>(rand() % kScreenWtidh) , 700.0f };
+
+								item[j].pos.world = VertexAffineMatrix(item[j].shape);
+
+								item[j].vel = { 0.0f , static_cast<float>(rand() % 8 + 4) };
+
+								item[j].acceleration = { 0.0f , 0.0f };
+
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if (gameFrame == 250)
+			{
+				for (int i = 0; i < kItemNum; i++)
+				{
+					if (item[i].isShot == false)
+					{
+						item[i].isShot = true;
+
+						item[i].type = ITEM_TYPE_TITLE;
+
+						item[i].shape.scale = { 320.0f,180.0f };
+						item[i].shape.theta = 0.0f;
+						item[i].shape.translate = { 640.0f , 900.0f };
+
+						item[i].pos.world = VertexAffineMatrix(item[i].shape);
+
+						item[i].vel = { 0.0f , 8.0f };
+
+						item[i].acceleration = { 0.0f , 0.0f };
+
+						break;
+					}
+				}
+			}
+
+			for (int i = 0; i < kItemNum; i++)
+			{
+				if (item[i].isShot)
+				{
+					if (item[i].acceleration.y > -1.0f)
+					{
+						item[i].acceleration.y -= 0.1f;
+					}
+
+					item[i].shape.translate.y += item[i].vel.y * item[i].acceleration.y;
+
+					item[i].pos.world = VertexAffineMatrix(item[i].shape);
+					item[i].pos.screen = CoordinateTransformation(item[i].pos.world);
+				}
+			}
+
+			if (gameFrame >= 600)
+			{
+				for (int i = 0; i < kItemNum; i++)
+				{
+					item[i].isShot = false;
+				}
+			}
+
 			// スペースキーでメニューへ
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
-				gameState = SCENE_MENU;
+				if (gameFrame >= 600)
+				{
+					gameState = SCENE_MENU;
 
-				gameFrame = 0;
+					gameFrame = 600;
+				}
+				else
+				{
+					gameFrame = 600;
+				}
 			}
 
-			// タイトル画面の描画
-			Novice::ScreenPrintf(100, 100, "title");
+
+			/// 描画処理
+
+			for (int i = 0; i < kItemNum; i++)
+			{
+				if (item[i].isShot)
+				{
+					Novice::DrawQuad
+					(
+						static_cast<int>(item[i].pos.screen.leftTop.x) , static_cast<int>(item[i].pos.screen.leftTop.y) ,
+						static_cast<int>(item[i].pos.screen.rightTop.x), static_cast<int>(item[i].pos.screen.rightTop.y),
+						static_cast<int>(item[i].pos.screen.leftBottom.x), static_cast<int>(item[i].pos.screen.leftBottom.y),
+						static_cast<int>(item[i].pos.screen.rightBottom.x), static_cast<int>(item[i].pos.screen.rightBottom.y),
+						0,0,1,1,ghWhite,0xFFFFFFFF
+					);
+				}
+			}
 
 			break;
 
@@ -433,10 +573,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			/// 更新処理
 
-			// 30フレームまで進める
+			// 630フレームまで進める
 			if (isGameStop == false)
 			{
-				if (gameFrame < 30)
+				if (gameFrame < 630)
 				{
 					gameFrame++;
 				}
@@ -459,7 +599,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameFrame++;
 
-					if (gameFrame >= 90)
+					if (gameFrame >= 690)
 					{
 						PlayerInitialValue(&player);
 
@@ -510,7 +650,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						isGameStop = true;
 
-						gameFrame = 30;
+						gameFrame = 630;
 					}
 				}
 
@@ -518,7 +658,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameFrame--;
 
-					if (gameFrame <= 0)
+					if (gameFrame <= 600)
 					{
 						gameState = SCENE_TITLE;
 
@@ -526,7 +666,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 						isGameStop = false;
 
-						gameFrame = 0;
+						gameFrame = 600;
 					}
 				}
 
@@ -545,9 +685,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// 描画処理
 
 			// ゲームスタート
-			if (gameFrame >= 0 && gameFrame <= 30)
+			if (gameFrame >= 600 && gameFrame <= 630)
 			{
-				int startFrame = gameFrame;
+				int startFrame = gameFrame - 600;
 				int endFrame = 30;
 
 				float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -569,9 +709,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			// チュートリアル
-			if (gameFrame >= 0 && gameFrame <= 30)
+			if (gameFrame >= 600 && gameFrame <= 630)
 			{
-				int startFrame = gameFrame;
+				int startFrame = gameFrame - 600;
 				int endFrame = 30;
 
 				float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -596,9 +736,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (menuNo == MENU_GAME_START)
 			{
 				// ゲームスタート
-				if (gameFrame >= 0 && gameFrame <= 30)
+				if (gameFrame >= 600 && gameFrame <= 630)
 				{
-					int startFrame = gameFrame;
+					int startFrame = gameFrame - 600;
 					int endFrame = 30;
 
 					float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -614,9 +754,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			} else if (menuNo == MENU_TUTORIAL)
 			{
 				// チュートリアル
-				if (gameFrame >= 0 && gameFrame <= 30)
+				if (gameFrame >= 600 && gameFrame <= 630)
 				{
-					int startFrame = gameFrame;
+					int startFrame = gameFrame - 600;
 					int endFrame = 30;
 
 					float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -638,13 +778,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// ゲームのメイン処理
 
-			if (gameFrame < 150)
+			if (gameFrame < 750)
 			{
 				gameFrame++;
 			}
 
 			// 150フレームでゲームが動き出す
-			if (gameFrame >= 150)
+			if (gameFrame >= 750)
 			{
 				/*----------------------
 					復活、ダメージ処理
@@ -706,7 +846,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (hitStop.isStop == false)
 				{
 					// プレイヤーを操作する
-					PlayerMove(&player, keys, preKeys, &leftStick, &sH);
+					PlayerMove(&player,particle, keys, preKeys, &leftStick, &sH);
 
 					// プレイヤーが爆弾を使う
 					PlayerBombUse(&player, bomb, bullet, keys, preKeys, &sH);
@@ -915,7 +1055,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			if (gameFrame >= 220)
+			if (gameFrame >= 820)
 			{
 				if (player.respawn.isRespawn == false)
 				{
