@@ -2581,6 +2581,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				gameFrame = 600;
 			}
 
+			Novice::DrawSprite(0, 0, ghGameClear, 1, 1,0.0f, 0xFFFFFFFF);
+
 			break;
 		}
 
