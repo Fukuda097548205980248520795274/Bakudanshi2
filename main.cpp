@@ -501,7 +501,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			gameState = SCENE_TITLE;
 		}
 
-		// シーンごとの処理
+		// シーンごとの処理!
 		switch (gameState)
 		{
 		case SCENE_TITLE:
