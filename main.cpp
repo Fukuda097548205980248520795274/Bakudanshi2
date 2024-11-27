@@ -377,6 +377,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	int ghPlayerHp = Novice::LoadTexture("./Resources/images/menu/playerHp.png");
 	int ghBossHp = Novice::LoadTexture("./Resources/images/menu/bossHp.png");
 
+	// チュートリアル
+	int ghTutorial = Novice::LoadTexture("./Resources/images/menu/tutorial.png");
+
 	// メニュー
 	int ghMenuExit = Novice::LoadTexture("./Resources/images/menu/menuExit.png");
 	int ghMenuStart = Novice::LoadTexture("./Resources/images/menu/menuStart.png");
@@ -628,7 +631,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawSprite(-200, -200, ghTitle, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
 			//Novice::DrawSprite(330, 220, ghTitleBar, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
 
-			
+
 			// パーティクルを動かす
 			PartivleMove(particle);
 
@@ -732,7 +735,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						// ボスを出現させる
 						BossArrival(&boss, BOSS_TYPE_STAGE_1);
 
-						gameState = SCENE_GAME;
+						gameState = SCENE_TUTORIAL;
 
 						isGameStop = false;
 
@@ -929,9 +932,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			break;
 
+		case SCENE_TUTORIAL:
+
+			if (gameFrame >= 330)
+			{
+				if (!preKeys[DIK_SPACE] && keys[DIK_SPACE])
+				{
+					gameState = SCENE_GAME;
+				}
+			}
+
+			Novice::DrawSprite(0, 0, ghTutorial, 1, 1, 0.0f, 0xFFFFFFFF);
+
+			break;
+
 		case SCENE_GAME:
 
-			// ゲームのメイン処理
+			// ゲームのメイン処理!
 
 			if (gameFrame < 450)
 			{
