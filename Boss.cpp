@@ -261,7 +261,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 							}
 
 							if (!Novice::IsPlayingAudio(sh->pHHitWall) || sh->pHHitWall == -1) {
-								sh->pHHitWall = Novice::PlayAudio(sh->hitWall, 0, 0.9f);
+								sh->pHHitWall = Novice::PlayAudio(sh->hitWall, 0, 1.4f);
 							}
 
 							// シェイク
@@ -345,11 +345,11 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 							}
 
 							if (!Novice::IsPlayingAudio(sh->pHHitWall) || sh->pHHitWall == -1) {
-								sh->pHHitWall = Novice::PlayAudio(sh->hitWall, 0, 0.9f);
+								sh->pHHitWall = Novice::PlayAudio(sh->hitWall, 0, 1.7f);
 							}
 
 							if (!Novice::IsPlayingAudio(sh->pHEarthqueke) || sh->pHEarthqueke == -1) {
-								sh->pHEarthqueke = Novice::PlayAudio(sh->earthqueke, 0, 1.0f);
+								sh->pHEarthqueke = Novice::PlayAudio(sh->earthqueke, 0, 3.5f);
 							}
 							// パーティクル
 							ParticleEmission(particle, PARTICLE_TYPE_COLLISION, boss->shape.translate.x, boss->shape.translate.y - boss->shape.scale.y);
