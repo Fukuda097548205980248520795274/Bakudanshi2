@@ -2713,6 +2713,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			if (player.isBomHave)
+			{
+				for (int i = 0; i < kBombNum; i++)
+				{
+					if (bomb[i].isBoot && bomb[i].isShot == false)
+					{
+						Novice::DrawBox(46, 128, bomb[i].timeLimit * 2, 16, 0.0f, 0x00FF00FF, kFillModeSolid);
+					}
+				}
+			}
+
 			// bgm
 			if (!Novice::IsPlayingAudio(sH.pHbattle) || sH.pHbattle == -1) {
 				sH.pHbattle = Novice::PlayAudio(sH.battle, 1, 0.3f);
@@ -2982,6 +2993,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				item[i].acceleration = { 0.0f , 0.0f };
 			}
+
+
+			/*----------------
+			    ボタン操作
+			----------------*/
+
+			gameFrame++;
+
+			if (gameFrame >= 1200)
+			{
+				gameState = SCENE_TITLE;
+
+				gameFrame = 300;
+			}
+
 
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
