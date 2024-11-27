@@ -76,12 +76,12 @@ void BulletShot(Bullet* bullet, int type, float posX, float posY)
 			case BULLET_TYPE_RUBBLE:
 
 				// 図形
-				bullet[i].shape.scale = { 36.0f , 36.0f /*24.0f , 24.0f*/ };
+				bullet[i].shape.scale = { 24.0f , 24.0f };
 				bullet[i].shape.theta = 0.0f;
 				bullet[i].shape.translate = { posX , posY };
 
 				// 移動速度
-				bullet[i].vel = { 0.0f , -6.0f/*-3.0f*/ };
+				bullet[i].vel = { 0.0f , -3.0f };
 
 				break;
 			}
@@ -186,11 +186,18 @@ void BulletMove(Bullet* bullet , Particle* particle)
 				bullet[i].shape.translate.y += bullet[i].vel.y;
 				bullet[i].pos.world = VertexAffineMatrix(bullet[i].shape);
 
+				if (bullet[i].frame % 5 == 0)
+				{
+					ParticleEmission(particle, PARTICLE_TYPE_GRAVITY_INVERT, bullet[i].shape.translate.x, bullet[i].shape.translate.y);
+				}
+
 				// 画面外に出たら消える（発射フラグがtrueになる）
 				if (bullet[i].shape.translate.x + bullet[i].shape.scale.x < 0.0f ||
 					bullet[i].shape.translate.x - bullet[i].shape.scale.x > static_cast<float>(kScreenWtidh) ||
 					bullet[i].shape.translate.y - bullet[i].shape.scale.y < 0.0f)
 				{
+					ParticleEmission(particle, PARTICLE_TYPE_RUBBLE_COLLISION, bullet[i].shape.translate.x, bullet[i].shape.translate.y);
+
 					bullet[i].isShot = false;
 				}
 

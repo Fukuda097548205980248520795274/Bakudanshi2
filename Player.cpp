@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Bomb.h"
 #include "Bullet.h"
+#include "Particle.h"
 
 /// <summary>
 /// ゲーム中のプレイヤーの初期値を入れる
@@ -28,6 +29,9 @@ void PlayerInitialValue(Player* player)
 
 	// 向ている方向
 	player->directionNo = DIRECTION_RIGHT;
+
+	// フレーム
+	player->frame = 0;
 
 	// 移動速度
 	player->vel = { 0.0f , 0.0f };
@@ -52,15 +56,23 @@ void PlayerInitialValue(Player* player)
 /// <param name="player">プレイヤー</param>
 /// <param name="keys">キー</param>
 /// <param name="preKeys">前に押したキー</param>
-void PlayerMove(Player* player, const char* keys, const char* preKeys, LeftStick* leftStick, SH* sh)
+void PlayerMove(Player* player,Particle* particle, const char* keys, const char* preKeys, LeftStick* leftStick, SH* sh)
 {
 
 	// nullを探す
-	if (player == nullptr || keys == nullptr || preKeys == nullptr || leftStick == nullptr)
+	if (player == nullptr || particle == nullptr || keys == nullptr || preKeys == nullptr || leftStick == nullptr)
 	{
 		return;
 	}
 
+
+	// フレームを進める
+	player->frame++;
+
+	if (player->frame >= 16)
+	{
+		player->frame = 0;
+	}
 
 	/*   横移動   */
 
@@ -70,7 +82,7 @@ void PlayerMove(Player* player, const char* keys, const char* preKeys, LeftStick
 	// 横移動を初期化する
 	player->vel.x = 0.0f;
 
-	// Aキーか左スティックで、左に移動する
+	// Aキーか左スティックで、左に移動するa
 	if (keys[DIK_A] || leftStick->x < 0)
 	{
 		if (player->respawn.isRespawn)
@@ -108,6 +120,14 @@ void PlayerMove(Player* player, const char* keys, const char* preKeys, LeftStick
 				sh->pHPlayerWalk = Novice::PlayAudio(sh->playerWalk, 0, 0.8f);
 			}
 		}
+
+		if (player->frame % 12 == 0)
+		{
+			if (player->jump.isJump == false)
+			{
+				ParticleEmission(particle, PARTICLE_TYPE_WALK, player->shape.translate.x, player->shape.translate.y - player->shape.scale.y);
+			}
+		}
 	}
 
 	// 横移動させる
@@ -133,7 +153,8 @@ void PlayerMove(Player* player, const char* keys, const char* preKeys, LeftStick
 
 				// 加速度で上に飛ぶ
 				player->jump.fallingVel = -0.5f;
-				Novice::PlayAudio(sh->jump, 0, 0.15f);
+				ParticleEmission(particle, PARTICLE_TYPE_GRAVITY, player->shape.translate.x, player->shape.translate.y - player->shape.scale.y);
+				Novice::PlayAudio(sh->jump, 0, 0.1f);
 			}
 		}
 	}

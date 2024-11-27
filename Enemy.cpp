@@ -86,7 +86,7 @@ void EnemyArrival(Enemy* enemy, int type, float posX, float posY, SH* sh)
 				enemy[i].vec = { 0.0f , 1.0f };
 
 				// 移動速度
-				enemy[i].vel = { 2.0f , 2.0f };
+				enemy[i].vel = { 1.0f , 1.0f };
 
 				Novice::PlayAudio(sh->flyingEnemyStart, 0, 0.7f);
 
@@ -131,13 +131,13 @@ void EnemyMove(Enemy* enemy, Player* player , Particle* particle)
 				{
 					if (enemy[i].directionNo == DIRECTION_LEFT)
 					{
-						if (enemy[i].vel.x > -2.0f)
+						if (enemy[i].vel.x > -1.0f)
 						{
 							enemy[i].vel.x += -0.1f;
 						}
 					} else if (enemy[i].directionNo == DIRECTION_RIGHT)
 					{
-						if (enemy[i].vel.x < 2.0f)
+						if (enemy[i].vel.x < 1.0f)
 						{
 							enemy[i].vel.x += 0.1f;
 						}

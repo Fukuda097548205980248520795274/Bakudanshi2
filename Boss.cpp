@@ -119,7 +119,8 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						if (rand() % 2 == 0)
 						{
 							boss->attackNo = 0;
-						} else
+						} 
+						else
 						{
 							boss->attackNo = 1;
 						}
@@ -131,10 +132,12 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						if (randam == 0)
 						{
 							boss->attackNo = 0;
-						} else if (randam == 1)
+						}
+						else if (randam == 1)
 						{
 							boss->attackNo = 4;
-						} else
+						}
+						else
 						{
 							boss->attackNo = 3;
 						}
@@ -146,10 +149,12 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						if (randam == 0)
 						{
 							boss->attackNo = 1;
-						} else if (randam == 1)
+						}
+						else if (randam == 1)
 						{
 							boss->attackNo = 0;
-						} else
+						}
+						else
 						{
 							boss->attackNo = 3;
 						}
@@ -161,17 +166,22 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						if (randam == 0)
 						{
 							boss->attackNo = 0;
-						} else if (randam == 1)
+						} 
+						else if (randam == 1)
 						{
 							boss->attackNo = 1;
-						} else if (randam == 2)
+						} 
+						else if (randam == 2)
 						{
 							boss->attackNo = 3;
-						} else
+						} 
+						else
 						{
 							boss->attackNo = 2;
 						}
 					}
+
+					boss->attackNo = 2;
 
 					// 攻撃を行う（攻撃フラグがtrueになる）
 					boss->isAttack = true;
@@ -186,7 +196,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						/*   突進   */
 
 						// プレイヤーのいる方向に突進する
-						if (boss->frame == 21)
+						if (boss->frame == 55)
 						{
 							if (boss->shape.translate.x - boss->shape.scale.x > 0.0f &&
 								boss->shape.translate.x + boss->shape.scale.x < static_cast<float>(kScreenWtidh))
@@ -196,7 +206,9 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 								if (boss->directionNo == DIRECTION_LEFT)
 								{
 									boss->vel.x = -14.0f;
-								} else if (boss->directionNo == DIRECTION_RIGHT)
+
+								} 
+								else if (boss->directionNo == DIRECTION_RIGHT)
 								{
 									boss->vel.x = 14.0f;
 								}
@@ -204,8 +216,16 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 							else
 							{
 								ParticleEmission(particle, PARTICLE_TYPE_RUBBLE_GRAVITY, 0.0f, 0.0f);
-							}
 
+								if (boss->directionNo == DIRECTION_LEFT)
+								{
+									ParticleEmission(particle, PARTICLE_TYPE_SPARK_RIGHT, boss->shape.translate.x - boss->shape.scale.x, boss->shape.translate.y);
+								}
+								else if (boss->directionNo == DIRECTION_RIGHT)
+								{
+									ParticleEmission(particle, PARTICLE_TYPE_SPARK_LEFT, boss->shape.translate.x + boss->shape.scale.x, boss->shape.translate.y);
+								}
+							}
 							if (!Novice::IsPlayingAudio(sh->pHBossDash) || sh->pHBossDash == -1) {
 								sh->pHBossDash = Novice::PlayAudio(sh->bossDash, 0, 0.6f);
 							}
@@ -213,7 +233,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						}
 
 						// 跳ね飛ぶ
-						if (boss->frame == 22)
+						if (boss->frame == 56)
 						{
 							boss->frame--;
 
@@ -257,7 +277,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						}
 
 						// 攻撃終了
-						if (boss->frame == 100)
+						if (boss->frame == 130)
 						{
 							boss->isAttack = false;
 							boss->attackNo = -1;
@@ -273,7 +293,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 
 						/*   振動   */
 
-						if (boss->frame >= 30 && boss->frame <= 130)
+						if (boss->frame >= 60 && boss->frame <= 160)
 						{
 							if (boss->directionNo == DIRECTION_LEFT)
 							{
@@ -283,14 +303,14 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 								boss->vel.x = 4.0f;
 							}
 
-							if (boss->frame == 30) {
+							if (boss->frame == 60) {
 								Novice::PlayAudio(sh->bossJump, 0, 0.6f);
 							}
 						}
 
-						if (boss->frame >= 30 && boss->frame <= 90)
+						if (boss->frame >= 60 && boss->frame <= 120)
 						{
-							int startFrame = boss->frame - 30;
+							int startFrame = boss->frame - 60;
 							int endFrame = 60;
 
 							float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -299,18 +319,23 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 							boss->shape.translate.y = (1.0f - easedT) * boss->shape.scale.y + easedT * 400.0f;
 						}
 
-						if (boss->frame >= 90 && boss->frame <= 130)
+						if (boss->frame >= 120 && boss->frame <= 160)
 						{
-							int startFrame = boss->frame - 90;
+							int startFrame = boss->frame - 120;
 							int endFrame = 40;
 
 							float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
 							float easedT = powf(frameRate, 3);
 
 							boss->shape.translate.y = (1.0f - easedT) * 400.0f + easedT * boss->shape.scale.y;
+
+							if (boss->frame % 5 == 0)
+							{
+								ParticleEmission(particle, PARTICLE_TYPE_GRAVITY_INVERT, boss->shape.translate.x, boss->shape.translate.y);
+							}
 						}
 
-						if (boss->frame == 130)
+						if (boss->frame == 160)
 						{
 							// シェイク
 							if (!backGround->isShake) {
@@ -329,16 +354,16 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 							ParticleEmission(particle, PARTICLE_TYPE_RUBBLE_GRAVITY, 0.0f, 0.0f);
 						}
 
-						if (boss->frame >= 130 && boss->frame <= 250)
+						if (boss->frame >= 160 && boss->frame <= 280)
 						{
-							if ((boss->frame - 130) % 60 == 0)
+							if ((boss->frame - 160) % 60 == 0)
 							{
 								BulletShot(bullet, BULLET_TYPE_VIBRATION_LEFT, boss->shape.translate.x, boss->shape.translate.y - boss->shape.scale.y);
 								BulletShot(bullet, BULLET_TYPE_VIBRATION_RIGHT, boss->shape.translate.x, boss->shape.translate.y - boss->shape.scale.y);
 							}
 						}
 
-						if (boss->frame >= 320)
+						if (boss->frame >= 350)
 						{
 							boss->isAttack = false;
 							boss->attackNo = -1;
@@ -362,6 +387,8 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 							float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
 
 							boss->shape.translate.y = (1.0f - frameRate) * boss->shape.scale.y + frameRate * (670.0f - boss->shape.scale.y);
+
+							ParticleEmission(particle , PARTICLE_TYPE_GRAVITY , boss->shape.translate.x , boss->shape.translate.y - boss->shape.scale.y);
 						}
 
 						if (boss->frame == 100)
@@ -395,37 +422,43 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 								{
 								case 0:
 
-									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, static_cast<float>(rand() % 550 + 650)/*1000.0f*/);
+									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 1000.0f);
+									ParticleEmission(particle , PARTICLE_TYPE_GRAVITY , static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 700.0f);
 
 									break;
 
 								case 1:
 
-									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, static_cast<float>(rand() % 550 + 650)/*650.0f*/);
+									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 650.0f);
+									ParticleEmission(particle, PARTICLE_TYPE_GRAVITY, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 700.0f);
 
 									break;
 
 								case 2:
 
-									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, static_cast<float>(rand() % 550 + 650)/*1200.0f*/);
+									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 1200.0f);
+									ParticleEmission(particle, PARTICLE_TYPE_GRAVITY, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 700.0f);
 
 									break;
 
 								case 3:
 
-									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, static_cast<float>(rand() % 550 + 650)/*700.0f*/);
+									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 700.0f);
+									ParticleEmission(particle, PARTICLE_TYPE_GRAVITY, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 700.0f);
 
 									break;
 
 								case 4:
 
-									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, static_cast<float>(rand() % 550 + 650)/*950.0f*/);
+									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 950.0f);
+									ParticleEmission(particle, PARTICLE_TYPE_GRAVITY, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 700.0f);
 
 									break;
 
 								case 5:
 
-									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, static_cast<float>(rand() % 550 + 650)/*800.0f*/);
+									BulletShot(bullet, BULLET_TYPE_RUBBLE, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 800.0f);
+									ParticleEmission(particle, PARTICLE_TYPE_GRAVITY, static_cast<float>(kScreenWtidh / 6) + static_cast<float>(kScreenWtidh / 7) * i, 700.0f);
 
 									break;
 								}
@@ -473,7 +506,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 								}
 							}
 
-							if (enemyCount > 6)
+							if (enemyCount > 3)
 							{
 								boss->attackNo = 0;
 
@@ -527,7 +560,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 								}
 							}
 
-							if (enemyCount > 6)
+							if (enemyCount > 3)
 							{
 								boss->attackNo = 0;
 

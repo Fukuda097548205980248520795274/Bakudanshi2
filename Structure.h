@@ -177,6 +177,9 @@ typedef struct Player
 	// 向いている方向
 	int directionNo;
 
+	// フレーム
+	int frame;
+
 
 	// 位置
 	Pos2 pos;
@@ -480,3 +483,27 @@ typedef struct LeftStick {
 	int y;
 
 }LeftStick;
+
+// アイテム
+typedef struct Item
+{
+	// 発射したかどうか（発射フラグ）
+	int isShot;
+
+	// 種類
+	int type;
+
+
+	// 位置
+	Pos2 pos;
+
+	// 移動速度
+	Vel2 vel;
+
+	// 加速度
+	Acceleration2 acceleration;
+
+
+	// 図形
+	Shape shape;
+}Item;

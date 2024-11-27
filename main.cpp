@@ -1,5 +1,7 @@
 #include <Novice.h>
 #include <math.h>
+#include <stdlib.h>
+#include <time.h>
 #include "Structure.h"
 #include "Constant.h"
 #include "Enumeration.h"
@@ -26,6 +28,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// キー入力結果を受け取る箱
 	char keys[256] = { 0 };
 	char preKeys[256] = { 0 };
+
+	// 乱数
+	unsigned int currentTimer = static_cast<unsigned int>(time(nullptr));
+	srand(currentTimer);
 
 	/*------------------------------
 		変数を作り、初期値を入れる
@@ -71,6 +77,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// 向ている方向
 	player.directionNo = -1;
+
+	// フレーム
+	player.frame = 0;
 
 	// 位置
 	player.pos.world = { {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} , {0.0f , 0.0f} };
@@ -252,6 +261,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	boss.shakeFrame = 50;
 
 
+	// 突進のフレーム
+	int rushFrame = 0;
+
+
 	/*   パーティクル   */
 
 	// 構造体
@@ -285,6 +298,30 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 		// 移動速度
 		particle[i].vel = { 0.0f , 0.0f };
+	}
+
+
+	/*   アイテム   */
+
+	// 構造体
+	Item item[kItemNum];
+
+	for (int i = 0; i < kItemNum; i++)
+	{
+		item[i].isShot = false;
+
+		item[i].type = -1;
+
+		item[i].shape.scale = {0.0f , 0.0f};
+		item[i].shape.theta = 0.0f;
+		item[i].shape.translate = { 0.0f , 0.0f };
+
+		item[i].pos.world = VertexAffineMatrix(item[i].shape);
+		item[i].pos.screen = CoordinateTransformation(item[i].pos.world);
+
+		item[i].vel = { 0.0f , 0.0f };
+
+		item[i].acceleration = { 0.0f , 0.0f };
 	}
 
 
@@ -334,9 +371,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	// プレイヤー
 	int ghCharPlayer = Novice::LoadTexture("./Resources/images/char/player.png");
+	int ghCharPlayerRun = Novice::LoadTexture("./Resources/images/char/playerRun.png");
+	int ghCharPlayerBombRun = Novice::LoadTexture("./Resources/images/char/playerBomRun.png");
 
 	// ボス
 	int ghCharBoss = Novice::LoadTexture("./Resources/images/char/boss.png");
+	int ghCharBossRun = Novice::LoadTexture("./Resources/images/char/bossRun.png");
+	int ghCharBossJump = Novice::LoadTexture("./Resources/images/char/bossJump.png");
+	int ghCharBossRoof = Novice::LoadTexture("./Resources/images/char/bossRoof.png");
+	int ghCharBossEnemyGround = Novice::LoadTexture("./Resources/images/char/bossEnemyGround.png");
+	int ghCharBossEnemySky = Novice::LoadTexture("./Resources/images/char/bossEnemySky.png");
 
 	// 敵（地上）
 	int ghCharEnemyGround = Novice::LoadTexture("./Resources/images/char/enemy_ground.png");
@@ -441,18 +485,124 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 		case SCENE_TITLE:
 
+			if (gameFrame < 600)
+			{
+				gameFrame++;
+			}
+
+			if (gameFrame >= 60 && gameFrame <= 180)
+			{
+				if (gameFrame % 20 == 0)
+				{
+					for (int i = 0; i < 5; i++)
+					{
+						for (int j = 0; j < kItemNum; j++)
+						{
+							if (item[j].isShot == false)
+							{
+								item[j].isShot = true;
+
+								item[j].type = ITEM_TYPE_BOM;
+
+								item[j].shape.scale = { 32.0f,32.0f };
+								item[j].shape.theta = static_cast<float>(rand() % 360);
+								item[j].shape.translate = { static_cast<float>(rand() % kScreenWtidh) , 700.0f };
+
+								item[j].pos.world = VertexAffineMatrix(item[j].shape);
+
+								item[j].vel = { 0.0f , static_cast<float>(rand() % 8 + 4) };
+
+								item[j].acceleration = { 0.0f , 0.0f };
+
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			if (gameFrame == 250)
+			{
+				for (int i = 0; i < kItemNum; i++)
+				{
+					if (item[i].isShot == false)
+					{
+						item[i].isShot = true;
+
+						item[i].type = ITEM_TYPE_TITLE;
+
+						item[i].shape.scale = { 320.0f,180.0f };
+						item[i].shape.theta = 0.0f;
+						item[i].shape.translate = { 640.0f , 900.0f };
+
+						item[i].pos.world = VertexAffineMatrix(item[i].shape);
+
+						item[i].vel = { 0.0f , 8.0f };
+
+						item[i].acceleration = { 0.0f , 0.0f };
+
+						break;
+					}
+				}
+			}
+
+			for (int i = 0; i < kItemNum; i++)
+			{
+				if (item[i].isShot)
+				{
+					if (item[i].acceleration.y > -1.0f)
+					{
+						item[i].acceleration.y -= 0.1f;
+					}
+
+					item[i].shape.translate.y += item[i].vel.y * item[i].acceleration.y;
+
+					item[i].pos.world = VertexAffineMatrix(item[i].shape);
+					item[i].pos.screen = CoordinateTransformation(item[i].pos.world);
+				}
+			}
+
+			if (gameFrame >= 600)
+			{
+				for (int i = 0; i < kItemNum; i++)
+				{
+					item[i].isShot = false;
+				}
+			}
+
 			// スペースキーでメニューへ
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
-				gameState = SCENE_MENU;
+				if (gameFrame >= 600)
+				{
+					gameState = SCENE_MENU;
 
-				gameFrame = 0;
-
+					gameFrame = 600;
+				}
+				else
+				{
+					gameFrame = 600;
+				}
 				Novice::PlayAudio(sH.decision, 0, 0.8f);
 			}
 
-			// タイトル画面の描画
-			Novice::ScreenPrintf(100, 100, "title");
+
+			/// 描画処理
+
+			for (int i = 0; i < kItemNum; i++)
+			{
+				if (item[i].isShot)
+				{
+					Novice::DrawQuad
+					(
+						static_cast<int>(item[i].pos.screen.leftTop.x) , static_cast<int>(item[i].pos.screen.leftTop.y) ,
+						static_cast<int>(item[i].pos.screen.rightTop.x), static_cast<int>(item[i].pos.screen.rightTop.y),
+						static_cast<int>(item[i].pos.screen.leftBottom.x), static_cast<int>(item[i].pos.screen.leftBottom.y),
+						static_cast<int>(item[i].pos.screen.rightBottom.x), static_cast<int>(item[i].pos.screen.rightBottom.y),
+						0,0,1,1,ghWhite,0xFFFFFFFF
+					);
+				}
+			}
 
 			if (!Novice::IsPlayingAudio(sH.pHtitle) || sH.pHtitle == -1) {
 				sH.pHtitle = Novice::PlayAudio(sH.title, 1, 0.3f);
@@ -466,10 +616,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			/// 更新処理
 
-			// 30フレームまで進める
+			// 630フレームまで進める
 			if (isGameStop == false)
 			{
-				if (gameFrame < 30)
+				if (gameFrame < 630)
 				{
 					gameFrame++;
 				}
@@ -500,7 +650,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameFrame++;
 
-					if (gameFrame >= 90)
+					if (gameFrame >= 690)
 					{
 						PlayerInitialValue(&player);
 
@@ -558,7 +708,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						isGameStop = true;
 
-						gameFrame = 30;
+						gameFrame = 630;
 					}
 				}
 
@@ -566,7 +716,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameFrame--;
 
-					if (gameFrame <= 0)
+					if (gameFrame <= 600)
 					{
 						gameState = SCENE_TITLE;
 
@@ -574,7 +724,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 						isGameStop = false;
 
-						gameFrame = 0;
+						gameFrame = 600;
 					}
 				}
 
@@ -595,9 +745,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/// 描画処理
 
 			// ゲームスタート
-			if (gameFrame >= 0 && gameFrame <= 30)
+			if (gameFrame >= 600 && gameFrame <= 630)
 			{
-				int startFrame = gameFrame;
+				int startFrame = gameFrame - 600;
 				int endFrame = 30;
 
 				float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -619,9 +769,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			// チュートリアル
-			if (gameFrame >= 0 && gameFrame <= 30)
+			if (gameFrame >= 600 && gameFrame <= 630)
 			{
-				int startFrame = gameFrame;
+				int startFrame = gameFrame - 600;
 				int endFrame = 30;
 
 				float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -646,9 +796,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (menuNo == MENU_GAME_START)
 			{
 				// ゲームスタート
-				if (gameFrame >= 0 && gameFrame <= 30)
+				if (gameFrame >= 600 && gameFrame <= 630)
 				{
-					int startFrame = gameFrame;
+					int startFrame = gameFrame - 600;
 					int endFrame = 30;
 
 					float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -664,9 +814,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			} else if (menuNo == MENU_TUTORIAL)
 			{
 				// チュートリアル
-				if (gameFrame >= 0 && gameFrame <= 30)
+				if (gameFrame >= 600 && gameFrame <= 630)
 				{
-					int startFrame = gameFrame;
+					int startFrame = gameFrame - 600;
 					int endFrame = 30;
 
 					float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -688,13 +838,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// ゲームのメイン処理
 
-			if (gameFrame < 150)
+			if (gameFrame < 750)
 			{
 				gameFrame++;
 			}
 
 			// 150フレームでゲームが動き出す
-			if (gameFrame >= 150)
+			if (gameFrame >= 750)
 			{
 				/*----------------------
 					復活、ダメージ処理
@@ -756,7 +906,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				if (hitStop.isStop == false)
 				{
 					// プレイヤーを操作する
-					PlayerMove(&player, keys, preKeys, &leftStick, &sH);
+					PlayerMove(&player,particle, keys, preKeys, &leftStick, &sH);
 
 					// プレイヤーが爆弾を使う
 					PlayerBombUse(&player, bomb, bullet, keys, preKeys, &sH);
@@ -772,6 +922,31 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 					// ボスを動かす
 					BossMove(&boss, &player, bullet, enemy, particle, &backGround, &sH);
+
+					rushFrame++;
+
+					if (boss.attackNo == 0)
+					{
+						if (boss.frame == 54)
+						{
+							if (rushFrame % 5 == 0)
+							{
+								if (boss.directionNo == DIRECTION_LEFT)
+								{
+									ParticleEmission(particle, PARTICLE_TYPE_SPARK_RIGHT, boss.shape.translate.x + boss.shape.scale.x, boss.shape.translate.y - boss.shape.scale.y);
+								}
+								else if (boss.directionNo == DIRECTION_RIGHT)
+								{
+									ParticleEmission(particle, PARTICLE_TYPE_SPARK_LEFT, boss.shape.translate.x - boss.shape.scale.x, boss.shape.translate.y - boss.shape.scale.y);
+								}
+							}
+						}
+					}
+
+					if (rushFrame >= 20)
+					{
+						rushFrame = 0;
+					}
 
 					// パーティクルを動かす
 					PartivleMove(particle);
@@ -884,7 +1059,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							{
 							case 0:
 
-								if (boss.frame == 20)
+								if (boss.frame == 54)
 								{
 									if (player.damage.isDamage == false)
 									{
@@ -965,7 +1140,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			if (gameFrame >= 220)
+			if (gameFrame >= 820)
 			{
 				if (player.respawn.isRespawn == false)
 				{
@@ -1019,7 +1194,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			/* 描画処理 */
 			// ここにゲーム中の描画処理を配置7
 
-			Novice::DrawSprite(-100 + backGround.rand.x, -100 + backGround.rand.y, ghBgStage, 1, 1, 0.0f, 0xFFFFFFFF);
+			Novice::DrawSprite(-120 + backGround.rand.x, -120 + backGround.rand.y, ghBgStage, 1, 1, 0.0f, 0xFFFFFFFF);
 
 			// 放出された（放出フラグがtrueである）パーティクル
 			for (int i = 0; i < kParticleNum; i++)
@@ -1040,21 +1215,501 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			
 
 			// ボス
-			if (boss.respawn.isRespawn)
+			if (boss.isArrival)
 			{
-				if (boss.isArrival)
+				if (boss.isAttack)
+				{
+					switch (boss.attackNo)
+					{
+					case 0:
+
+						if (boss.frame < 24)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						if (boss.frame >= 24 && boss.frame <= 55)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									64 * ((boss.frame - 24) / 8), 0, 64, 128, ghCharBossRun, 0xFFFFFFFF
+								);
+							} else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									64 * ((boss.frame - 24) / 8), 0, 64, 128, ghCharBossRun, 0xFFFFFFFF
+								);
+							}
+						}
+
+						if (boss.frame > 55)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							} 
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						break;
+
+					case 1:
+
+						if (boss.frame < 25)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							} 
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						if (boss.frame >= 25 && boss.frame <= 48)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								64 * ((boss.frame - 25) / 6), 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
+							);
+						}
+						
+						if (boss.frame > 48 && boss.frame < 60)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								64 * 3, 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame >= 60 && boss.frame < 160)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							} 
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						if (boss.frame >= 160 && boss.frame < 310)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								64 * 3, 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame >= 310 && boss.frame <= 333)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								192 - 64 * ((boss.frame - 310) / 6), 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame > 333)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							} 
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						break;
+
+					case 2:
+
+						if (boss.frame < 30)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						if (boss.frame >= 30 && boss.frame <= 53)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								64 * ((boss.frame - 30) / 6), 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
+							);
+						}
+						
+						if (boss.frame > 53 && boss.frame < 80)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								192, 0, 64, 128, ghCharBossJump, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame >= 80 && boss.frame < 100)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								128, 0, 64, 128, ghCharBossEnemySky, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame >= 100 && boss.frame < 127)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								192, 0, 64, 128, ghCharBossRoof, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame >= 127 && boss.frame <= 150)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								192 - 64 * ((boss.frame - 127) / 6), 0, 64, 128, ghCharBossRoof, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame > 150)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							} 
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						break;
+
+					case 3:
+
+						if (boss.frame < 30)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						if (boss.frame >= 30 && boss.frame <= 77)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								64 * ((boss.frame - 30) / 12), 0, 64, 128, ghCharBossEnemyGround, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame > 77)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						break;
+
+					case 4:
+
+						if (boss.frame < 30)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+							else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						if (boss.frame >= 30 && boss.frame <= 80)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								64 * ((boss.frame - 30) / 13), 0, 64, 128, ghCharBossEnemySky, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame >= 80 && boss.frame <= 240)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+								static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+								static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+								static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+								192, 0, 64, 128, ghCharBossEnemySky, 0xFFFFFFFF
+							);
+						}
+
+						if (boss.frame > 240)
+						{
+							if (boss.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							} else if (boss.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
+									static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+									static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
+									static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
+									0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
+								);
+							}
+						}
+
+						break;
+					}
+				}
+				else
 				{
 					if (boss.directionNo == DIRECTION_LEFT)
 					{
 						Novice::DrawQuad
 						(
-							static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
+							static_cast<int>(boss.pos.screen.leftTop.x) , static_cast<int>(boss.pos.screen.leftTop.y) ,
 							static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
 							static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
 							static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
-							0, 0, 742, 1069, ghCharBoss, 0xFFFFFFFF
+							0 , 0 , 64 , 128 , ghCharBoss , 0xFFFFFFFF
 						);
-					} else if (boss.directionNo == DIRECTION_RIGHT)
+					} 
+					else if (boss.directionNo == DIRECTION_RIGHT)
 					{
 						Novice::DrawQuad
 						(
@@ -1062,32 +1717,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
 							static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
 							static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
-							0, 0, 742, 1069, ghCharBoss, 0xFFFFFFFF
+							0, 0, 64, 128, ghCharBoss, 0xFFFFFFFF
 						);
 					}
-				}
-			} else
-			{
-				if (boss.directionNo == DIRECTION_LEFT)
-				{
-					Novice::DrawQuad
-					(
-						static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
-						static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
-						static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
-						static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
-						0, 0, 742, 1069, ghCharBoss, 0xFFFFFFFF
-					);
-				} else if (boss.directionNo == DIRECTION_RIGHT)
-				{
-					Novice::DrawQuad
-					(
-						static_cast<int>(boss.pos.screen.rightBottom.x), static_cast<int>(boss.pos.screen.rightBottom.y),
-						static_cast<int>(boss.pos.screen.leftBottom.x), static_cast<int>(boss.pos.screen.leftBottom.y),
-						static_cast<int>(boss.pos.screen.rightTop.x), static_cast<int>(boss.pos.screen.rightTop.y),
-						static_cast<int>(boss.pos.screen.leftTop.x), static_cast<int>(boss.pos.screen.leftTop.y),
-						0, 0, 742, 1069, ghCharBoss, 0xFFFFFFFF
-					);
 				}
 			}
 
@@ -1110,9 +1742,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
 									static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
 									static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
-									0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+									64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 								);
-							} else if (enemy[i].directionNo == DIRECTION_RIGHT)
+							}
+							else if (enemy[i].directionNo == DIRECTION_RIGHT)
 							{
 								Novice::DrawQuad
 								(
@@ -1120,7 +1753,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 									static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
 									static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
 									static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
-									0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+									64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 								);
 							}
 
@@ -1134,13 +1767,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
 								static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
 								static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
-								0, 0, 1024, 1024, ghCharEnemyFlying, 0xFFFFFFFF
+								64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyFlying, 0xFFFFFFFF
 							);
 
 							break;
 						}
 					}
-				} else
+				} 
+				else
 				{
 					switch (enemy[i].type)
 					{
@@ -1154,7 +1788,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
 								static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
 								static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
-								0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+								64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 							);
 						} else if (enemy[i].directionNo == DIRECTION_RIGHT)
 						{
@@ -1164,7 +1798,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								static_cast<int>(enemy[i].pos.screen.leftBottom.x), static_cast<int>(enemy[i].pos.screen.leftBottom.y),
 								static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
 								static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
-								0, 0, 1024, 1024, ghCharEnemyGround, 0xFFFFFFFF
+								64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyGround, 0xFFFFFFFF
 							);
 						}
 
@@ -1178,7 +1812,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							static_cast<int>(enemy[i].pos.screen.rightBottom.x), static_cast<int>(enemy[i].pos.screen.rightBottom.y),
 							static_cast<int>(enemy[i].pos.screen.leftTop.x), static_cast<int>(enemy[i].pos.screen.leftTop.y),
 							static_cast<int>(enemy[i].pos.screen.rightTop.x), static_cast<int>(enemy[i].pos.screen.rightTop.y),
-							0, 0, 1024, 1024, ghCharEnemyFlying, 0xFFFFFFFF
+							64 * ((enemy[i].frame % 24) / 8), 0, 64, 64, ghCharEnemyFlying, 0xFFFFFFFF
 						);
 
 						break;
@@ -1227,26 +1861,80 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				if (player.damage.isDamage == false)
 				{
-					if (player.directionNo == DIRECTION_LEFT)
+					if (player.vel.x != 0.0f)
 					{
-						Novice::DrawQuad
-						(
-							static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
-							static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
-							static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
-							static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
-							0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
-						);
-					} else if (player.directionNo == DIRECTION_RIGHT)
+						if (player.isBomHave == false)
+						{
+							if (player.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									1924 * (player.frame / 8), 0, 1024, 954, ghCharPlayerRun, 0xFFFFFFFF
+								);
+							} else if (player.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									1924 * (player.frame / 8), 0, 1024, 954, ghCharPlayerRun, 0xFFFFFFFF
+								);
+							}
+						}
+						else
+						{
+							if (player.directionNo == DIRECTION_LEFT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									1924 * (player.frame / 8), 0, 1024, 954, ghCharPlayerBombRun, 0xFFFFFFFF
+								);
+							} else if (player.directionNo == DIRECTION_RIGHT)
+							{
+								Novice::DrawQuad
+								(
+									static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+									static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+									static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+									static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+									1924 * (player.frame / 8), 0, 1024, 954, ghCharPlayerBombRun, 0xFFFFFFFF
+								);
+							}
+						}
+					}
+					else
 					{
-						Novice::DrawQuad
-						(
-							static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
-							static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
-							static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
-							static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
-							0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
-						);
+						if (player.directionNo == DIRECTION_LEFT)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+								static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+								static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+								static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+								0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
+							);
+						} else if (player.directionNo == DIRECTION_RIGHT)
+						{
+							Novice::DrawQuad
+							(
+								static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
+								static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
+								static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
+								static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
+								0, 0, 1024, 1024, ghCharPlayer, 0xFFFFFFFF
+							);
+						}
 					}
 				} else
 				{
@@ -1272,7 +1960,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						);
 					}
 				}
-			} else
+			} 
+			else
 			{
 				if (player.directionNo == DIRECTION_LEFT)
 				{
