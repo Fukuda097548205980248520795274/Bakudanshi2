@@ -525,68 +525,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 		case SCENE_TITLE:
 
-			if (gameFrame < 600)
-			{
-				gameFrame++;
-			}
-
-			if (gameFrame >= 60 && gameFrame <= 180)
-			{
-				if (gameFrame % 20 == 0)
-				{
-					for (int i = 0; i < 5; i++)
-					{
-						for (int j = 0; j < kItemNum; j++)
-						{
-							if (item[j].isShot == false)
-							{
-								item[j].isShot = true;
-
-								item[j].type = ITEM_TYPE_BOM;
-
-								item[j].shape.scale = { 32.0f,32.0f };
-								item[j].shape.theta = static_cast<float>(rand() % 360);
-								item[j].shape.translate = { static_cast<float>(rand() % kScreenWtidh) , 700.0f };
-
-								item[j].pos.world = VertexAffineMatrix(item[j].shape);
-
-								item[j].vel = { 0.0f , static_cast<float>(rand() % 8 + 4) };
-
-								item[j].acceleration = { 0.0f , 0.0f };
-
-								break;
-							}
-						}
-					}
-				}
-			}
-
-			for (int i = 0; i < kItemNum; i++)
-			{
-				if (item[i].isShot)
-				{
-					if (item[i].acceleration.y > -1.0f)
-					{
-						item[i].acceleration.y -= 0.1f;
-					}
-
-					item[i].shape.translate.y += item[i].vel.y * item[i].acceleration.y;
-
-					item[i].pos.world = VertexAffineMatrix(item[i].shape);
-					item[i].pos.screen = CoordinateTransformation(item[i].pos.world);
-				}
-			}
-
-			if (gameFrame >= 600)
-			{
-				for (int i = 0; i < kItemNum; i++)
-				{
-					item[i].isShot = false;
-				}
-			}
-
-			Novice::ScreenPrintf(100, 300, "%d", titlebar.jumpCount);
-
 			if (titlebar.isJump) {
 				// 加速度
 				titlebar.velocity.y += titlebar.acceleration.y;
@@ -599,7 +537,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					titlebar.pos.y = 600.0f - titlebar.radius.y;
 					titlebar.velocity.y *= -0.3f;
 					titlebar.jumpCount--;
-					//titlebar.isJump = false;
 				}
 			}
 
@@ -626,7 +563,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// 描画処理
 			Novice::DrawSprite(-200, -200, ghTitle, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
-			Novice::DrawSprite(330, 220, ghTitleBar, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
+			//Novice::DrawSprite(330, 220, ghTitleBar, 1.0f, 1.0f, 0.0f, 0xFFFFFFFF);
+
+			Novice::DrawSprite
+			(
+				static_cast<int>(titlebar.pos.x - titlebar.radius.x),
+				static_cast<int>(titlebar.pos.y - titlebar.radius.y),
+				ghTitleBar,
+				1.0f, 1.0f, 0.0f, 0xFFFFFFFF
+			);
 
 			for (int i = 0; i < kItemNum; i++)
 			{
@@ -638,19 +583,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						static_cast<int>(item[i].pos.screen.rightTop.x), static_cast<int>(item[i].pos.screen.rightTop.y),
 						static_cast<int>(item[i].pos.screen.leftBottom.x), static_cast<int>(item[i].pos.screen.leftBottom.y),
 						static_cast<int>(item[i].pos.screen.rightBottom.x), static_cast<int>(item[i].pos.screen.rightBottom.y),
-						0, 0, 1, 1, ghWhite, 0xFFFFFFFF
+						0, 0, 1024, 1024, ghItemBomb, 0xFFFFFFFF
 					);
 				}
 			}
-
-			Novice::DrawBox
-			(
-				static_cast<int>(titlebar.pos.x - titlebar.radius.x),
-				static_cast<int>(titlebar.pos.y - titlebar.radius.y),
-				static_cast<int>(titlebar.radius.x * 2.0f),
-				static_cast<int>(titlebar.radius.y * 2.0f),
-				0.0f, 0xFFFFFFFF, kFillModeSolid
-			);
 
 			if (!Novice::IsPlayingAudio(sH.pHtitle) || sH.pHtitle == -1) {
 				sH.pHtitle = Novice::PlayAudio(sH.title, 1, 0.3f);
@@ -721,6 +657,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
+
+				titlebar.pos = { 640.0f, -400.0f };
+				titlebar.velocity = { 0.0f, 10.0f };
+				titlebar.acceleration = { 0.0f, 0.1f };
+				titlebar.radius = { 300.0f, 200.0f };
+				titlebar.jumpCount = 3;
+				titlebar.isJump = true;
 
 				break;
 
@@ -866,6 +809,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
+			titlebar.pos = { 640.0f, -400.0f };
+			titlebar.velocity = { 0.0f, 10.0f };
+			titlebar.acceleration = { 0.0f, 0.1f };
+			titlebar.radius = { 300.0f, 200.0f };
+			titlebar.jumpCount = 3;
+			titlebar.isJump = true;
 
 			break;
 
