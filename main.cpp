@@ -3005,6 +3005,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 
+			/*----------------
+			    ボタン操作
+			----------------*/
 
 			gameFrame++;
 
