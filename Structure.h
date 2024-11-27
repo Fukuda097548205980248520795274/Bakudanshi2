@@ -477,6 +477,8 @@ typedef struct SH {
 	int clear;
 	int pHclear;
 
+	int tutorial;
+
 }SH;
 
 // コントローラーの左スティックを感知する変数
