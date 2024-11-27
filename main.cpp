@@ -533,37 +533,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				gameFrame++;
 			}
 
-			if (gameFrame >= 60 && gameFrame <= 180)
-			{
-				if (gameFrame % 20 == 0)
-				{
-					for (int i = 0; i < 5; i++)
-					{
-						for (int j = 0; j < kItemNum; j++)
-						{
-							if (item[j].isShot == false)
-							{
-								item[j].isShot = true;
-
-								item[j].type = ITEM_TYPE_BOM;
-
-								item[j].shape.scale = { 32.0f,32.0f };
-								item[j].shape.theta = static_cast<float>(rand() % 360);
-								item[j].shape.translate = { static_cast<float>(rand() % kScreenWtidh) , 700.0f };
-
-								item[j].pos.world = VertexAffineMatrix(item[j].shape);
-
-								item[j].vel = { 0.0f , static_cast<float>(rand() % 8 + 4) };
-
-								item[j].acceleration = { 0.0f , 0.0f };
-
-								break;
-							}
-						}
-					}
-				}
-			}
-
 			if (gameFrame == 250)
 			{
 				for (int i = 0; i < kItemNum; i++)
@@ -614,7 +583,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			if (titlebar.isJump) {
-				// 加速度
+				// 加速度!
 				titlebar.velocity.y += titlebar.acceleration.y;
 
 				// 速度
@@ -637,26 +606,21 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// スペースキーでメニューへ
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
-				if (gameFrame >= 300)
-				{
-					gameState = SCENE_MENU;
 
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 250, 300);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 800, 400);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 290, 600);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 1000, 200);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 500, 500);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 1190, 600);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 640, -100);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 150, -100);
-					ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 390, 100);
+				gameState = SCENE_MENU;
 
-					gameFrame = 300;
-				}
-				else
-				{
-					gameFrame = 300;
-				}
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 250, 300);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 800, 400);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 290, 600);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 1000, 200);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 500, 500);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 1190, 600);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 640, -100);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 150, -100);
+				ParticleEmission(particle, PARTICLE_TYPE_BIG_BOMB, 390, 100);
+
+				gameFrame = 300;
+
 				Novice::PlayAudio(sH.decision, 0, 0.8f);
 			}
 
