@@ -2729,7 +2729,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					if (bomb[i].isBoot && bomb[i].isShot == false)
 					{
-						Novice::DrawBox(46, 128, bomb[i].timeLimit * 2, 16, 0.0f, 0x00FF00FF, kFillModeSolid);
+						Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0x00FF00FF, kFillModeSolid);
 					}
 				}
 			}
