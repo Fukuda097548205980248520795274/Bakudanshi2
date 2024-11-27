@@ -283,6 +283,7 @@ void PlayerBombUse(Player* player, Bomb* bomb, Bullet* bullet, const char* keys,
 					player->isBomHave = false;
 
 					Novice::StopAudio(sh->pHBomCount);
+					Novice::PlayAudio(sh->explosive, 0, 0.6f);
 					sh->volumeBomCount = 0.4f;
 				}
 			}
