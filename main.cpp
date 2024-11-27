@@ -448,7 +448,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 				gameFrame = 0;
 
-				Novice::PlayAudio(sH.decision, 0, 0.6f);
+				Novice::PlayAudio(sH.decision, 0, 0.8f);
 			}
 
 			// タイトル画面の描画
@@ -492,7 +492,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						isGameStop = true;
 
-						Novice::PlayAudio(sH.decision, 0, 0.3f);
+						Novice::PlayAudio(sH.decision, 0, 0.8f);
 					}
 				}
 
@@ -520,7 +520,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						menuNo = MENU_TUTORIAL;
 
-						Novice::PlayAudio(sH.cursor, 0, 0.8f);
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
@@ -534,7 +534,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						menuNo = MENU_GAME_START;
 
-						Novice::PlayAudio(sH.cursor, 0, 0.8f);
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
@@ -544,7 +544,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						menuNo = MENU_RETURN;
 
-						Novice::PlayAudio(sH.cursor, 0, 0.8f);
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
@@ -584,7 +584,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						menuNo = MENU_TUTORIAL;
 
-						Novice::PlayAudio(sH.cursor, 0, 0.6f);
+						Novice::PlayAudio(sH.cursor, 0, 1.0f);
 					}
 				}
 
