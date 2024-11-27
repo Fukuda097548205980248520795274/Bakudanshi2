@@ -3223,6 +3223,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				item[i].acceleration = { 0.0f , 0.0f };
 			}
 
+
+			Novice::StopAudio(sH.pHbattle);
+
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
 				gameState = SCENE_TITLE;
