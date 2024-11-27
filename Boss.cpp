@@ -181,8 +181,6 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 						}
 					}
 
-					boss->attackNo = 2;
-
 					// 攻撃を行う（攻撃フラグがtrueになる）
 					boss->isAttack = true;
 				} 

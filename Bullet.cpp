@@ -40,7 +40,7 @@ void BulletShot(Bullet* bullet, int type, float posX, float posY)
 			case BULLET_TYPE_EXPLOSION:
 
 				// 図形
-				bullet[i].shape.scale = { 120.0f , 120.0f };
+				bullet[i].shape.scale = { 100.0f , 100.0f };
 				bullet[i].shape.theta = 0.0f;
 				bullet[i].shape.translate = { posX , posY };
 
