@@ -474,6 +474,9 @@ typedef struct SH {
 	int battle;
 	int pHbattle;
 
+	int clear;
+	int pHclear;
+
 }SH;
 
 // コントローラーの左スティックを感知する変数

@@ -492,6 +492,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	sH.battle = Novice::LoadAudio("./Resources/Sounds/battle.mp3");
 	sH.pHbattle = -1;
 
+	sH.clear = Novice::LoadAudio("./Resources/Sounds/clear.mp3");
+	sH.pHclear = -1;
+
 	Titlebar titlebar;
 	titlebar.pos = { 640.0f, -400.0f };
 	titlebar.velocity = { 0.0f, 10.0f };
@@ -593,6 +596,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			Novice::StopAudio(sH.pHmenu);
+			Novice::StopAudio(sH.pHbattle);
 
 			break;
 
@@ -3145,6 +3149,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			Novice::DrawSprite(0, 0, ghGameClear, 1, 1, 0.0f, 0xFFFFFFFF);
+
+			// bgm
+			if (!Novice::IsPlayingAudio(sH.pHclear) || sH.pHclear == -1) {
+				sH.pHclear = Novice::PlayAudio(sH.clear, 1, 0.3f);
+			}
+
+			Novice::StopAudio(sH.pHbattle);
 
 			break;
 		}
