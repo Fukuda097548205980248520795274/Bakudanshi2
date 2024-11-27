@@ -2279,7 +2279,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			// 敵
+			// 敵!
 			for (int i = 0; i < kEnemyNum; i++)
 			{
 				if (enemy[i].respawn.isRespawn)
