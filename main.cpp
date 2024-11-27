@@ -506,7 +506,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		{
 		case SCENE_TITLE:
 
-			if (gameFrame < 600)
+			if (gameFrame < 300)
 			{
 				gameFrame++;
 			}
@@ -583,7 +583,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			if (gameFrame >= 600)
+			if (gameFrame >= 300)
 			{
 				for (int i = 0; i < kItemNum; i++)
 				{
@@ -594,15 +594,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// スペースキーでメニューへ
 			if (keys[DIK_SPACE] && !preKeys[DIK_SPACE] || Novice::IsTriggerButton(0, kPadButton10))
 			{
-				if (gameFrame >= 600)
+				if (gameFrame >= 300)
 				{
 					gameState = SCENE_MENU;
 
-					gameFrame = 600;
+					gameFrame = 300;
 				}
 				else
 				{
-					gameFrame = 600;
+					gameFrame = 300;
 				}
 				Novice::PlayAudio(sH.decision, 0, 0.8f);
 			}
@@ -640,7 +640,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			// 630フレームまで進める
 			if (isGameStop == false)
 			{
-				if (gameFrame < 630)
+				if (gameFrame < 330)
 				{
 					gameFrame++;
 				}
@@ -671,7 +671,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameFrame++;
 
-					if (gameFrame >= 690)
+					if (gameFrame >= 390)
 					{
 						PlayerInitialValue(&player);
 
@@ -729,7 +729,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						isGameStop = true;
 
-						gameFrame = 630;
+						gameFrame = 330;
 					}
 				}
 
@@ -737,7 +737,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					gameFrame--;
 
-					if (gameFrame <= 600)
+					if (gameFrame <= 300)
 					{
 						gameState = SCENE_TITLE;
 
@@ -745,7 +745,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 						isGameStop = false;
 
-						gameFrame = 600;
+						gameFrame = 300;
 					}
 				}
 
@@ -768,9 +768,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			Novice::DrawSprite(0, 0, ghMenu, 1, 1, 0.0f, 0xFFFFFFFF);
 
 			// ゲームスタート
-			if (gameFrame >= 600 && gameFrame <= 630)
+			if (gameFrame >= 300 && gameFrame <= 330)
 			{
-				int startFrame = gameFrame - 600;
+				int startFrame = gameFrame - 300;
 				int endFrame = 30;
 
 				float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -792,9 +792,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			}
 
 			// チュートリアル
-			if (gameFrame >= 600 && gameFrame <= 630)
+			if (gameFrame >= 300 && gameFrame <= 330)
 			{
-				int startFrame = gameFrame - 600;
+				int startFrame = gameFrame - 300;
 				int endFrame = 30;
 
 				float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -819,9 +819,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			if (menuNo == MENU_GAME_START)
 			{
 				// ゲームスタート
-				if (gameFrame >= 600 && gameFrame <= 630)
+				if (gameFrame >= 300 && gameFrame <= 330)
 				{
-					int startFrame = gameFrame - 600;
+					int startFrame = gameFrame - 300;
 					int endFrame = 30;
 
 					float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -837,9 +837,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			} else if (menuNo == MENU_TUTORIAL)
 			{
 				// チュートリアル
-				if (gameFrame >= 600 && gameFrame <= 630)
+				if (gameFrame >= 300 && gameFrame <= 330)
 				{
-					int startFrame = gameFrame - 600;
+					int startFrame = gameFrame - 300;
 					int endFrame = 30;
 
 					float frameRate = static_cast<float>(startFrame) / static_cast<float>(endFrame);
@@ -861,13 +861,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 			// ゲームのメイン処理
 
-			if (gameFrame < 750)
+			if (gameFrame < 450)
 			{
 				gameFrame++;
 			}
 
 			// 150フレームでゲームが動き出す
-			if (gameFrame >= 750)
+			if (gameFrame >= 450)
 			{
 				/*----------------------
 					復活、ダメージ処理
@@ -1177,7 +1177,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			if (gameFrame >= 820)
+			if (gameFrame >= 520)
 			{
 				if (player.respawn.isRespawn == false)
 				{
@@ -2562,7 +2562,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							static_cast<int>(player.pos.screen.leftTop.x), static_cast<int>(player.pos.screen.leftTop.y),
 							static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
 							static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
-							0, 0, 1024, 1024, ghCharPlayerHit, 0xFFFFFFFF
+							0, 0, 1024, 1024, ghCharPlayerHit, 0xFF0000FF
 						);
 					} else if (player.directionNo == DIRECTION_RIGHT)
 					{
@@ -2572,7 +2572,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 							static_cast<int>(player.pos.screen.rightTop.x), static_cast<int>(player.pos.screen.rightTop.y),
 							static_cast<int>(player.pos.screen.leftBottom.x), static_cast<int>(player.pos.screen.leftBottom.y),
 							static_cast<int>(player.pos.screen.rightBottom.x), static_cast<int>(player.pos.screen.rightBottom.y),
-							0, 0, 1024, 1024, ghCharPlayerHit, 0xFFFFFFFF
+							0, 0, 1024, 1024, ghCharPlayerHit, 0xFF0000FF
 						);
 					}
 				}
@@ -2911,7 +2911,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				gameState = SCENE_TITLE;
 
-				gameFrame = 0;
+				gameFrame = 300;
 			}
 
 			if (!Novice::IsPlayingAudio(sH.pHmenu) || sH.pHmenu == -1) {
@@ -3189,7 +3189,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			{
 				gameState = SCENE_TITLE;
 
-				gameFrame = 600;
+				gameFrame = 300;
 			}
 
 			Novice::DrawSprite(0, 0, ghGameClear, 1, 1,0.0f, 0xFFFFFFFF);
