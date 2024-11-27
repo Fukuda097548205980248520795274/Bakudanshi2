@@ -261,7 +261,7 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 							}
 
 							if (!Novice::IsPlayingAudio(sh->pHHitWall) || sh->pHHitWall == -1) {
-								sh->pHHitWall = Novice::PlayAudio(sh->hitWall, 0, 0.6f);
+								sh->pHHitWall = Novice::PlayAudio(sh->hitWall, 0, 0.9f);
 							}
 
 							// シェイク
@@ -342,6 +342,10 @@ void BossMove(Boss* boss, Player* player, Bullet* bullet, Enemy* enemy, Particle
 								backGround->shakeRange.y = boss->shakeStrong.y;
 								backGround->randSpeed.x = boss->shakeWeak.x / boss->shakeFrame;
 								backGround->randSpeed.y = boss->shakeStrong.y / boss->shakeFrame;
+							}
+
+							if (!Novice::IsPlayingAudio(sh->pHHitWall) || sh->pHHitWall == -1) {
+								sh->pHHitWall = Novice::PlayAudio(sh->hitWall, 0, 0.9f);
 							}
 
 							if (!Novice::IsPlayingAudio(sh->pHEarthqueke) || sh->pHEarthqueke == -1) {
