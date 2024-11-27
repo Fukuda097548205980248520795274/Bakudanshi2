@@ -694,7 +694,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				}
 			}
 
-			// 放出された（放出フラグがtrueである）パーティクル
+			// 放出された（放出フラグがtrueである）パーティクル!
 			for (int i = 0; i < kParticleNum; i++)
 			{
 				if (particle[i].isEmission)
