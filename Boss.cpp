@@ -42,7 +42,7 @@ void BossArrival(Boss* boss, int type)
 		// 向いている方向
 		boss->directionNo = DIRECTION_LEFT;
 
-		// 攻撃させない（攻撃フラグをfalseにする）
+		// 攻撃させない（攻撃フラグをfalseにする）!
 		boss->isAttack = false;
 		boss->attackNo = -1;
 

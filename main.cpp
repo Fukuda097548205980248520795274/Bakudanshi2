@@ -419,6 +419,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 敵（空中）
 	int ghCharEnemyFlying = Novice::LoadTexture("./Resources/images/char/enemy_flying.png");
 
+	// チャンス
+	int ghChance = Novice::LoadTexture("./Resources/images/menu/chance.png");
+
 
 	/*   効果音   */
 
@@ -2340,6 +2343,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				int randamX = Shake(20);
 				int randamY = Shake(20);
 
+				if (boss.respawn.isRespawn)
+				{
+					Novice::DrawSprite
+					(
+						static_cast<int>(boss.pos.screen.leftBottom.x + boss.shape.scale.x) - 147 + randamX,
+						static_cast<int>(boss.pos.screen.leftBottom.y - boss.shape.scale.y) - 220 + randamY,
+						ghChance, 1, 1, 0.0f, 0xFFFFFFFF
+					);
+				}
+
 				if (boss.directionNo == DIRECTION_LEFT)
 				{
 					Novice::DrawQuad
@@ -2719,12 +2732,23 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 				{
 					if (bomb[i].isBoot && bomb[i].isShot == false)
 					{
-						Novice::DrawBox(46, 128, bomb[i].timeLimit * 2, 16, 0.0f, 0x00FF00FF, kFillModeSolid);
+						if (bomb[i].timeLimit >= 135)
+						{
+							Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0x00FF00FF, kFillModeSolid);
+						}
+						else if (bomb[i].timeLimit >= 90)
+						{
+							Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0xFFFF00FF, kFillModeSolid);
+						}
+						else
+						{
+							Novice::DrawBox(90, 71, bomb[i].timeLimit, 16, 0.0f, 0xFF0000FF, kFillModeSolid);
+						}
 					}
 				}
 			}
 
-			// bgm
+			// bgm!
 			if (!Novice::IsPlayingAudio(sH.pHbattle) || sH.pHbattle == -1) {
 				sH.pHbattle = Novice::PlayAudio(sH.battle, 1, 0.3f);
 			}
