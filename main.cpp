@@ -968,7 +968,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 					{
 						Sinking(player.respawn, &player.pos, &player.vel, &player.shape);
 						RespawnProcess(&player.respawn);
-						DamageProcess(&player);
+						DamageProcess(&player, &sH);
 					} else
 					{
 						gameFrame++;
@@ -1246,6 +1246,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 								{
 									if (boss.damage.isDamage == false)
 									{
+
 										boss.damage.hp -= 50;
 										boss.damage.isDamage = true;
 
