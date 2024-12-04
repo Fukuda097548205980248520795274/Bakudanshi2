@@ -425,7 +425,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 	/*   効果音   */
 
-	// 歩く
+	// 歩くa
 	sH.playerWalk = Novice::LoadAudio("./Resources/Sounds/playerWalk.mp3");
 
 	// ダメージ
